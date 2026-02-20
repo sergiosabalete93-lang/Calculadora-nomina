@@ -3,203 +3,258 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <meta http-equiv="X-Frame-Options" content="DENY">
-    <title>Calculadora de Nómina Pro - Seguridad Certificada</title>
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <title>Payroll Pro - Global Security Version</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
         .no-select { user-select: none; -webkit-user-select: none; }
+        .lang-btn.active { border-color: #60a5fa; color: #60a5fa; background: rgba(59, 130, 246, 0.15); box-shadow: 0 0 10px rgba(96, 165, 250, 0.2); }
         input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-        #modal-legal { display: none; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
     </style>
 </head>
 <body class="bg-slate-900 text-white min-h-screen font-sans flex flex-col no-select">
 
-    <header class="p-6 bg-slate-800 border-b border-slate-700 text-center shadow-2xl relative z-10">
-        <h1 class="text-2xl font-extrabold tracking-tight text-blue-400 uppercase">Calculadora de Nómina</h1>
-        <div class="flex justify-center items-center gap-2 mt-1">
-            <span class="text-[9px] bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full border border-green-500/30">
-                <i class="fa-solid fa-lock"></i> PROCESAMIENTO LOCAL SEGURO
-            </span>
+    <header class="p-4 bg-slate-800/90 backdrop-blur-md border-b border-slate-700 shadow-2xl sticky top-0 z-50">
+        <div class="max-w-lg mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-wallet text-blue-400"></i>
+                <h1 class="text-sm font-black text-blue-400 tracking-tighter uppercase">Payroll Pro <span class="text-[8px] text-slate-500">2026</span></h1>
+            </div>
+            
+            <div id="lang-container" class="flex gap-1">
+                <button onclick="changeLanguage('es')" id="lang-es" class="lang-btn text-[9px] font-bold border border-slate-700 px-2.5 py-1.5 rounded-lg transition-all">ES</button>
+                <button onclick="changeLanguage('en')" id="lang-en" class="lang-btn text-[9px] font-bold border border-slate-700 px-2.5 py-1.5 rounded-lg transition-all">EN</button>
+                <button onclick="changeLanguage('it')" id="lang-it" class="lang-btn text-[9px] font-bold border border-slate-700 px-2.5 py-1.5 rounded-lg transition-all">IT</button>
+                <button onclick="changeLanguage('pt')" id="lang-pt" class="lang-btn text-[9px] font-bold border border-slate-700 px-2.5 py-1.5 rounded-lg transition-all">PT</button>
+            </div>
         </div>
     </header>
 
-    <main class="p-4 max-w-lg mx-auto mt-4 flex-grow w-full">
-        <div class="flex bg-slate-800 p-1 rounded-xl mb-6 text-sm border border-slate-700 shadow-inner">
-            <button onclick="setModo('mes')" id="btn-mes" class="flex-1 py-2 rounded-lg bg-blue-600 font-bold text-white transition-all duration-300">Mensual</button>
-            <button onclick="setModo('semana')" id="btn-semana" class="flex-1 py-2 rounded-lg font-bold text-slate-400 transition-all duration-300">Semanal</button>
-            <button onclick="setModo('horas')" id="btn-horas" class="flex-1 py-2 rounded-lg font-bold text-slate-400 transition-all duration-300">Por Horas</button>
+    <main class="p-4 max-w-lg mx-auto mt-2 flex-grow w-full">
+        <div class="flex bg-slate-800 p-1 rounded-2xl mb-6 border border-slate-700 shadow-inner">
+            <button onclick="setModo('mes')" id="btn-mes" data-i18n="btn-mes" class="flex-1 py-2.5 rounded-xl bg-blue-600 font-bold text-xs uppercase transition-all">Mensual</button>
+            <button onclick="setModo('semana')" id="btn-semana" data-i18n="btn-semana" class="flex-1 py-2.5 rounded-xl font-bold text-slate-500 text-xs uppercase">Semanal</button>
+            <button onclick="setModo('horas')" id="btn-horas" data-i18n="btn-horas" class="flex-1 py-2.5 rounded-xl font-bold text-slate-500 text-xs uppercase">Por Horas</button>
         </div>
 
-        <section class="space-y-4">
-            <div>
-                <label class="text-xs font-bold text-slate-500 uppercase ml-1 tracking-wider">País de Residencia Fiscal</label>
-                <select id="pais" onchange="actualizarOpcionesAvanzadas()" class="w-full bg-slate-800 border border-slate-700 p-4 rounded-xl mt-1 focus:ring-2 focus:ring-blue-500 outline-none text-lg">
+        <div class="space-y-4">
+            <div class="bg-slate-800/50 p-4 rounded-2xl border border-slate-800">
+                <label data-i18n="label-pais" class="text-[10px] font-bold text-slate-500 uppercase ml-1 tracking-widest">País de Residencia</label>
+                <select id="pais" onchange="actualizarOpcionesAvanzadas()" class="w-full bg-transparent text-lg font-bold outline-none mt-1 cursor-pointer">
                     <option value="ES">España 🇪🇸</option>
-                    <option value="UK">Reino Unido 🇬🇧</option>
+                    <option value="UK">United Kingdom 🇬🇧</option>
                     <option value="IT">Italia 🇮🇹</option>
                     <option value="PT">Portugal 🇵🇹</option>
                 </select>
             </div>
 
             <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label id="label-salario" class="text-xs font-bold text-slate-500 uppercase ml-1">Sueldo Bruto</label>
-                    <input type="number" id="salario" step="0.01" class="w-full bg-slate-800 border border-slate-700 p-4 rounded-xl mt-1 text-lg outline-none focus:border-blue-500 shadow-inner" placeholder="0.00">
+                <div class="bg-slate-800/50 p-4 rounded-2xl border border-slate-800">
+                    <label id="label-salario" data-i18n="label-salario" class="text-[10px] font-bold text-slate-500 uppercase block mb-1">Sueldo Bruto</label>
+                    <input type="number" id="salario" step="0.01" class="w-full bg-transparent text-2xl font-black outline-none text-blue-400 placeholder-slate-700" placeholder="0.00">
                 </div>
-                <div>
-                    <label id="label-tiempo" class="text-xs font-bold text-slate-500 uppercase ml-1">Tiempo</label>
-                    <input type="number" id="tiempo" class="w-full bg-slate-800 border border-slate-700 p-4 rounded-xl mt-1 text-lg outline-none focus:border-blue-500 shadow-inner" placeholder="Ej: 30">
-                </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="text-xs font-bold text-slate-500 uppercase ml-1">Bonus/Extras</label>
-                    <input type="number" id="bonus" class="w-full bg-slate-800 border border-slate-700 p-4 rounded-xl mt-1 outline-none focus:border-blue-500" placeholder="0.00">
-                </div>
-                <div>
-                    <label class="text-xs font-bold text-slate-500 uppercase ml-1">Prorrata</label>
-                    <input type="number" id="prorrata" class="w-full bg-slate-800 border border-slate-700 p-4 rounded-xl mt-1 outline-none focus:border-blue-500" placeholder="0.00">
+                <div class="bg-slate-800/50 p-4 rounded-2xl border border-slate-800">
+                    <label id="label-tiempo" data-i18n="label-tiempo" class="text-[10px] font-bold text-slate-500 uppercase block mb-1">Tiempo</label>
+                    <input type="number" id="tiempo" class="w-full bg-transparent text-2xl font-black outline-none placeholder-slate-700" placeholder="30">
                 </div>
             </div>
 
-            <button onclick="toggleAvanzado()" class="w-full text-[10px] font-black text-slate-400 hover:text-blue-400 flex items-center justify-center py-3 border border-slate-800 rounded-xl mt-2 transition-all bg-slate-800/30 uppercase tracking-widest">
-                <i class="fa-solid fa-sliders mr-2"></i> Configuración Fiscal Específica
+            <button onclick="toggleAvanzado()" class="w-full py-3 rounded-xl border border-slate-800 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] hover:bg-slate-800/50 transition-all">
+                <i class="fa-solid fa-gear mr-2"></i> <span data-i18n="btn-avanzado">Opciones Avanzadas</span>
             </button>
 
-            <div id="panel-avanzado" class="bg-slate-800/80 border border-slate-700 rounded-2xl p-6 space-y-5 hidden shadow-2xl">
+            <div id="panel-avanzado" class="hidden space-y-4 bg-slate-800/30 p-4 rounded-2xl border border-dashed border-slate-700">
                 <div id="adv-es" class="hidden">
-                    <label class="text-xs font-bold text-blue-400 uppercase block mb-2">Retención IRPF Manual (%)</label>
-                    <input type="number" id="irpf-manual" class="w-full bg-slate-900 border border-slate-600 p-3 rounded-xl text-lg outline-none focus:border-blue-500" placeholder="Auto">
+                    <label data-i18n="adv-es-label" class="text-[10px] font-bold text-blue-400 uppercase block mb-2">Retención IRPF (%)</label>
+                    <input type="number" id="irpf-manual" class="w-full bg-slate-900/50 border border-slate-700 p-3 rounded-xl outline-none" placeholder="Auto (15-19%)">
                 </div>
-                <div id="adv-uk" class="hidden space-y-4">
-                    <div>
-                        <label class="text-xs font-bold text-blue-400 uppercase block mb-1">Pensión (%)</label>
-                        <input type="number" id="pension-porcentaje" class="w-full bg-slate-900 border border-slate-600 p-3 rounded-xl" placeholder="Ej: 5">
-                    </div>
-                    <div class="flex items-center justify-between bg-slate-900 p-4 rounded-xl">
-                        <label class="text-xs text-slate-300 uppercase font-bold text-[10px]">Second Job (BR)</label>
-                        <input type="checkbox" id="check-second-job" class="w-6 h-6">
-                    </div>
-                </div>
-                <div id="adv-it" class="hidden space-y-4">
-                    <label class="text-xs font-bold text-blue-400 uppercase block">Addizionale Regionale (%)</label>
-                    <input type="number" id="it-regional" class="w-full bg-slate-900 border border-slate-600 p-3 rounded-xl" placeholder="Ej: 1.5">
-                </div>
-                <div id="adv-pt" class="hidden space-y-4">
-                    <label class="text-xs font-bold text-blue-400 uppercase block">Hijos a cargo</label>
-                    <input type="number" id="pt-hijos" class="w-full bg-slate-900 border border-slate-600 p-3 rounded-xl" placeholder="0">
+                <div id="adv-uk" class="hidden">
+                    <label data-i18n="adv-uk-label" class="text-[10px] font-bold text-blue-400 uppercase block mb-2">Pension Contribution (%)</label>
+                    <input type="number" id="pension-porcentaje" class="w-full bg-slate-900/50 border border-slate-700 p-3 rounded-xl outline-none" placeholder="Default 5%">
                 </div>
             </div>
 
-            <button onclick="ejecutarCalculoSeguro()" class="w-full bg-blue-600 hover:bg-blue-500 py-5 rounded-2xl text-xl font-black shadow-xl shadow-blue-900/40 active:scale-[0.98] transition-all mt-6 uppercase tracking-widest">
-                Calcular Neto Pro
+            <button onclick="validarYCalcular()" data-i18n="btn-calcular" class="w-full bg-blue-600 hover:bg-blue-500 py-5 rounded-3xl text-lg font-black shadow-2xl shadow-blue-900/40 transition-all active:scale-95 uppercase tracking-widest">
+                Calcular Neto
             </button>
-        </section>
+        </div>
 
-        <section id="result-card" class="hidden mt-8 bg-gradient-to-br from-blue-700 to-indigo-900 rounded-[2.5rem] p-8 shadow-2xl border border-white/10">
-            <div class="text-white">
-                <p class="text-[10px] font-black text-blue-200 uppercase tracking-widest mb-2">Neto Estimado</p>
-                <h2 id="neto-display" class="text-5xl font-black mb-6 tracking-tighter">0.00</h2>
-                <div class="space-y-4 text-sm border-t border-white/10 pt-6">
-                    <div class="flex justify-between opacity-80"><span>Bruto:</span><span id="bruto-display">0.00</span></div>
-                    <div class="flex justify-between text-red-200"><span>Seg. Social:</span><span id="ss-display">-0.00</span></div>
-                    <div class="flex justify-between text-red-200"><span>Retenciones:</span><span id="tax-display">-0.00</span></div>
+        <section id="result-card" class="hidden mt-8 animate-fade-in">
+            <div class="bg-gradient-to-br from-blue-600 to-indigo-900 rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
+                
+                <p data-i18n="res-estimado" class="text-[10px] font-black text-blue-200 uppercase tracking-[0.3em] mb-2">Neto Estimado</p>
+                <h2 id="neto-display" class="text-6xl font-black text-white mb-8 tracking-tighter">0.00</h2>
+                
+                <div class="space-y-4 text-xs font-bold border-t border-white/10 pt-6">
+                    <div class="flex justify-between text-white/70"><span data-i18n="res-bruto">Bruto:</span><span id="bruto-display">0.00</span></div>
+                    <div class="flex justify-between text-red-300"><span><i class="fa-solid fa-shield-heart mr-2"></i><span data-i18n="res-ss">Seg. Social:</span></span><span id="ss-display">-0.00</span></div>
+                    <div class="flex justify-between text-red-300"><span><i class="fa-solid fa-landmark mr-2"></i><span data-i18n="res-tax">Impuestos:</span></span><span id="tax-display">-0.00</span></div>
                 </div>
             </div>
         </section>
     </main>
 
-    <footer class="p-8 bg-slate-800/80 border-t border-slate-700 mt-12 text-center">
-        <button onclick="abrirLegal()" class="text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-4">
-            <i class="fa-solid fa-scale-balanced mr-1"></i> Aviso Legal y Privacidad RGPD
-        </button>
+    <footer class="p-8 text-center opacity-50">
+        <button onclick="abrirLegal()" data-i18n="btn-legal" class="text-[9px] font-black uppercase tracking-[0.2em] hover:text-blue-400 transition-colors">Aviso Legal & Privacidad RGPD</button>
     </footer>
 
-    <div id="modal-legal" class="fixed inset-0 bg-slate-950/98 z-50 p-6 flex-col overflow-y-auto">
-        <div class="max-w-xl mx-auto w-full py-10">
-            <h3 class="text-xl font-black text-blue-400 mb-6 uppercase">Privacidad y Términos Legales</h3>
-            <div class="space-y-4 text-[11px] text-slate-400 leading-relaxed text-justify">
-                <p><strong>Responsabilidad:</strong> Los cálculos mostrados son estimaciones informativas basadas en la legislación fiscal proyectada para 2026. Esta herramienta no sustituye la asesoría de un profesional.</p>
-                <p><strong>Privacidad (RGPD):</strong> Esta aplicación NO utiliza cookies de rastreo ni almacena datos en servidores. El procesamiento se realiza exclusivamente en la memoria local de su navegador. Sus datos financieros nunca salen de su dispositivo.</p>
-                <p><strong>Seguridad:</strong> Se utiliza cifrado SSL y protección contra inyecciones de código para garantizar la integridad de la sesión.</p>
+    <div id="modal-legal" class="fixed inset-0 bg-slate-950/98 z-[100] p-6 hidden flex-col justify-center items-center">
+        <div class="max-w-md w-full">
+            <div class="flex items-center gap-3 mb-6">
+                <i class="fa-solid fa-scale-balanced text-blue-400 text-2xl"></i>
+                <h3 data-i18n="legal-titulo" class="text-xl font-black uppercase tracking-tighter">Legal</h3>
             </div>
-            <button onclick="cerrarLegal()" class="w-full bg-blue-600 py-4 rounded-xl mt-8 font-bold uppercase text-xs">Acepto y Entiendo</button>
+            <div id="legal-content" class="text-[11px] text-slate-400 leading-relaxed text-justify space-y-4 bg-slate-900/50 p-6 rounded-2xl border border-slate-800 mb-8 max-h-[50vh] overflow-y-auto">
+                </div>
+            <button onclick="cerrarLegal()" data-i18n="legal-btn" class="w-full bg-white text-slate-950 py-4 rounded-2xl font-black uppercase text-xs tracking-widest active:scale-95 transition-all">Cerrar</button>
         </div>
     </div>
 
     <script>
         "use strict";
+
+        const translations = {
+            es: {
+                "btn-mes": "Mensual", "btn-semana": "Semanal", "btn-horas": "Horas",
+                "label-pais": "País de Residencia Fiscal", "label-salario": "Sueldo Bruto",
+                "label-tiempo": "Días / Tiempo", "btn-avanzado": "Configuración Avanzada",
+                "btn-calcular": "Calcular Sueldo Neto", "res-estimado": "Neto a Recibir",
+                "res-bruto": "Sueldo Bruto:", "res-ss": "Seguridad Social:", "res-tax": "Impuestos IRPF:",
+                "btn-legal": "Transparencia, Privacidad y Aviso Legal", "legal-titulo": "Marco Legal Pro",
+                "legal-btn": "He leído y acepto los términos", "adv-es-label": "IRPF Manual (%)", "adv-uk-label": "Pension (%)",
+                "legal-txt": "<strong>1. Privacidad:</strong> Los datos introducidos NO se almacenan. El cálculo es local (Client-side).<br><br><strong>2. Disclaimer:</strong> Esta calculadora es una simulación basada en la normativa de 2026. No sustituye a una gestoría oficial.<br><br><strong>3. Seguridad:</strong> Aplicación protegida contra XSS y Clickjacking."
+            },
+            en: {
+                "btn-mes": "Monthly", "btn-semana": "Weekly", "btn-horas": "Hourly",
+                "label-pais": "Tax Residence Country", "label-salario": "Gross Salary",
+                "label-tiempo": "Days / Hours", "btn-avanzado": "Advanced Settings",
+                "btn-calcular": "Calculate Net Pay", "res-estimado": "Take-Home Pay",
+                "res-bruto": "Gross Salary:", "res-ss": "National Insurance:", "res-tax": "Income Tax:",
+                "btn-legal": "Legal Notice & GDPR Privacy", "legal-titulo": "Legal & Privacy Framework",
+                "legal-btn": "I Accept the Terms", "adv-es-label": "Manual Tax (%)", "adv-uk-label": "Pension (%)",
+                "legal-txt": "<strong>1. Privacy:</strong> Data is NOT stored. Processing is local.<br><br><strong>2. Disclaimer:</strong> This is a simulation based on 2026 rules. Not professional advice.<br><br><strong>3. Security:</strong> XSS and Clickjacking protected."
+            },
+            it: {
+                "btn-mes": "Mensile", "btn-semana": "Settimanale", "btn-horas": "Orario",
+                "label-pais": "Paese di Residenza Fiscale", "label-salario": "Lordo Mensile",
+                "label-tiempo": "Giorni / Ore", "btn-avanzado": "Opzioni Avanzate",
+                "btn-calcular": "Calcola Netto", "res-estimado": "Stipendio Netto",
+                "res-bruto": "Lordo Totale:", "res-ss": "Contributi INPS:", "res-tax": "Ritenuta IRPEF:",
+                "btn-legal": "Note Legali e Privacy", "legal-titulo": "Quadro Legale",
+                "legal-btn": "Accetto", "adv-es-label": "IRPF Manuale (%)", "adv-uk-label": "Pensione (%)",
+                "legal-txt": "Simulazione basata sulle normative fiscali 2026. Nessun dato viene salvato sui nostri server."
+            },
+            pt: {
+                "btn-mes": "Mensal", "btn-semana": "Semanal", "btn-horas": "Por Hora",
+                "label-pais": "País de Residência Fiscal", "label-salario": "Vencimento Bruto",
+                "label-tiempo": "Dias / Horas", "btn-avanzado": "Opções Avançadas",
+                "btn-calcular": "Calcular Líquido", "res-estimado": "Salário Líquido",
+                "res-bruto": "Bruto Total:", "res-ss": "Segurança Social:", "res-tax": "Retenção IRS:",
+                "btn-legal": "Privacidade e Termos Legais", "legal-titulo": "Enquadramento Legal",
+                "legal-btn": "Aceito os Termos", "adv-es-label": "IRS Manual (%)", "adv-uk-label": "Pensão (%)",
+                "legal-txt": "Esta calculadora é uma simulação informativa. Os dados são processados localmente de acordo com o RGPD."
+            }
+        };
+
+        let currentLang = 'es';
         let modoActual = 'mes';
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            document.querySelectorAll("[data-i18n]").forEach(el => {
+                const key = el.getAttribute("data-i18n");
+                el.textContent = translations[lang][key];
+            });
+            document.getElementById("legal-content").innerHTML = translations[lang]['legal-txt'];
+            document.querySelectorAll(".lang-btn").forEach(btn => btn.classList.remove('active'));
+            document.getElementById('lang-' + lang).classList.add('active');
+            actualizarLabels();
+        }
 
         function setModo(modo) {
             modoActual = modo;
             ['mes', 'semana', 'horas'].forEach(m => {
-                document.getElementById('btn-' + m).className = (m === modo) ? 'flex-1 py-2 rounded-lg bg-blue-600 font-bold text-white' : 'flex-1 py-2 rounded-lg font-bold text-slate-400';
+                const b = document.getElementById('btn-' + m);
+                b.className = (m === modo) ? 'flex-1 py-2.5 rounded-xl bg-blue-600 font-bold text-xs uppercase' : 'flex-1 py-2.5 rounded-xl font-bold text-slate-500 text-xs uppercase';
             });
-            document.getElementById('label-salario').textContent = (modo === 'horas') ? 'Precio/Hora' : 'Sueldo Bruto';
+            actualizarLabels();
+        }
+
+        function actualizarLabels() {
+            const lSal = document.getElementById('label-salario');
+            const lTime = document.getElementById('label-tiempo');
+            if(modoActual === 'horas') {
+                lSal.textContent = (currentLang === 'en') ? 'Hourly Rate' : (currentLang === 'it') ? 'Tariffa Oraria' : 'Precio/Hora';
+                lTime.textContent = (currentLang === 'en') ? 'Total Hours' : 'Total Horas';
+            } else {
+                lSal.textContent = translations[currentLang]['label-salario'];
+                lTime.textContent = translations[currentLang]['label-tiempo'];
+            }
+        }
+
+        function validarYCalcular() {
+            const s = document.getElementById('salario');
+            const t = document.getElementById('tiempo');
+            // Sanitización: Solo positivos
+            if (s.value < 0) s.value = 0;
+            if (t.value < 0) t.value = 0;
+            calcular();
+        }
+
+        function calcular() {
+            const pais = document.getElementById('pais').value;
+            const simb = (pais === 'UK') ? '£' : '€';
+            const s = parseFloat(document.getElementById('salario').value) || 0;
+            const t = parseFloat(document.getElementById('tiempo').value) || 0;
+            
+            let bruto = (modoActual === 'horas') ? s * t : s;
+            let ss = 0, tax = 0;
+
+            if(pais === 'ES') {
+                ss = bruto * 0.0647;
+                const m = document.getElementById('irpf-manual').value;
+                tax = (m !== "") ? bruto * (parseFloat(m)/100) : bruto * (bruto > 3000 ? 0.22 : 0.15);
+            } else if(pais === 'UK') {
+                ss = (bruto > 1048) ? (bruto - 1048) * 0.08 : 0;
+                tax = (bruto > 1047) ? (bruto - 1047) * 0.20 : 0;
+            } else if(pais === 'IT') {
+                ss = bruto * 0.0919;
+                tax = bruto * 0.23;
+            } else if(pais === 'PT') {
+                ss = bruto * 0.11;
+                tax = bruto * 0.14;
+            }
+
+            const neto = bruto - ss - tax;
+
+            // Renderizado Seguro
+            document.getElementById('bruto-display').textContent = bruto.toLocaleString(undefined, {minimumFractionDigits: 2}) + simb;
+            document.getElementById('neto-display').textContent = neto.toLocaleString(undefined, {minimumFractionDigits: 2}) + simb;
+            document.getElementById('ss-display').textContent = '-' + ss.toLocaleString(undefined, {minimumFractionDigits: 2}) + simb;
+            document.getElementById('tax-display').textContent = '-' + tax.toLocaleString(undefined, {minimumFractionDigits: 2}) + simb;
+            
+            document.getElementById('result-card').classList.remove('hidden');
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
         }
 
         function toggleAvanzado() { document.getElementById('panel-avanzado').classList.toggle('hidden'); }
+        function actualizarOpcionesAvanzadas() {
+            const p = document.getElementById('pais').value;
+            ['adv-es', 'adv-uk'].forEach(id => document.getElementById(id)?.classList.add('hidden'));
+            document.getElementById('adv-' + p.toLowerCase())?.classList.remove('hidden');
+        }
         function abrirLegal() { document.getElementById('modal-legal').style.display = 'flex'; }
         function cerrarLegal() { document.getElementById('modal-legal').style.display = 'none'; }
 
-        function actualizarOpcionesAvanzadas() {
-            const p = document.getElementById('pais').value;
-            ['adv-es', 'adv-uk', 'adv-it', 'adv-pt'].forEach(id => document.getElementById(id).classList.add('hidden'));
-            document.getElementById('adv-' + p.toLowerCase()).classList.remove('hidden');
-        }
-
-        function ejecutarCalculoSeguro() {
-            try {
-                const pais = document.getElementById('pais').value;
-                const simb = (pais === 'UK') ? '£' : '€';
-                
-                // Sanitización estricta
-                const s = Math.abs(parseFloat(document.getElementById('salario').value)) || 0;
-                const t = Math.abs(parseFloat(document.getElementById('tiempo').value)) || 0;
-                const b = Math.abs(parseFloat(document.getElementById('bonus').value)) || 0;
-                const pr = Math.abs(parseFloat(document.getElementById('prorrata').value)) || 0;
-
-                let bruto = (modoActual === 'horas') ? s * t : s;
-                bruto += b + pr;
-
-                let ss = 0, tax = 0;
-
-                if(pais === 'ES') {
-                    ss = bruto * 0.0647;
-                    const m = document.getElementById('irpf-manual').value;
-                    tax = (m !== "") ? bruto * (parseFloat(m)/100) : (bruto * 0.16);
-                } else if(pais === 'UK') {
-                    ss = (bruto > 1048) ? (bruto - 1048) * 0.08 : 0;
-                    tax = (document.getElementById('check-second-job').checked) ? bruto * 0.20 : (bruto > 1047 ? (bruto - 1047) * 0.20 : 0);
-                } else if(pais === 'IT') {
-                    ss = bruto * 0.0919;
-                    tax = bruto * 0.25; // Aproximación IRPEF 2026
-                } else if(pais === 'PT') {
-                    ss = bruto * 0.11;
-                    tax = bruto * 0.18; // Aproximación IRS 2026
-                }
-
-                const neto = bruto - ss - tax;
-
-                // Renderizado seguro contra XSS
-                document.getElementById('bruto-display').textContent = bruto.toFixed(2) + simb;
-                document.getElementById('neto-display').textContent = neto.toFixed(2) + simb;
-                document.getElementById('ss-display').textContent = '-' + ss.toFixed(2) + simb;
-                document.getElementById('tax-display').textContent = '-' + tax.toFixed(2) + simb;
-                document.getElementById('result-card').classList.remove('hidden');
-                
-                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-            } catch (e) { console.error("Error de integridad"); }
-        }
-
-        // Protección de marcos (Anti-Clickjacking)
         if (window.top !== window.self) { window.top.location = window.self.location; }
+        changeLanguage('es');
     </script>
 </body>
 </html>
