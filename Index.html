@@ -149,4 +149,122 @@
                 pais: "Paese Fiscale", bruto: "Lordo Totale", tiempo: "Giorni / Ore", avanzado: "Opzioni Avanzate", calc: "Calcola Netto",
                 resTit: "Stipendio Netto", resBruto: "Lordo Totale:", resSS: "Contributi:", resTax: "Tasse (IRPEF):",
                 es_irpf: "IRPF Manuale (%)", uk_2job: "Secondo Lavoro?", uk_pen: "Pensione (%)", it_reg: "Add. Regionale (%)", it_com: "Add. Comunale (%)",
-                pt_est: "Stato Civile", pt_hijos: "Figli a Carico", opt_sol: "Celibe / Nubile", opt_cas: "Con
+                pt_est: "Stato Civile", pt_hijos: "Figli a Carico", opt_sol: "Celibe / Nubile", opt_cas: "Coniugato", ad: "Elaborazione..."
+            },
+            pt: {
+                pais: "País Fiscal", bruto: "Vencimento Bruto", tiempo: "Dias / Horas", avanzado: "Opções Avançadas", calc: "Calcular Líquido",
+                resTit: "Salário Líquido", resBruto: "Bruto Total:", resSS: "Seg. Social:", resTax: "Retenção IRS:",
+                es_irpf: "IRS Manual (%)", uk_2job: "2º Emprego?", uk_pen: "Pensão (%)", it_reg: "Taxa Regional (%)", it_com: "Taxa Municipal (%)",
+                pt_est: "Estado Civil", pt_hijos: "Dependentes", opt_sol: "Solteiro", opt_cas: "Casado", ad: "A Processar..."
+            }
+        };
+
+        let lang = 'es';
+        let modo = 'mes';
+        let contador = 0;
+
+        function changeLanguage(l) {
+            lang = l;
+            const t = i18n[l];
+            document.getElementById('lbl-pais').textContent = t.pais;
+            document.getElementById('lbl-bruto').textContent = (modo==='horas') ? (l==='en'?'Rate/Hour':'Precio/Hora') : t.bruto;
+            document.getElementById('lbl-tiempo').textContent = t.tiempo;
+            document.getElementById('lbl-btn-avanzado').textContent = t.avanzado;
+            document.getElementById('lbl-btn-calc').textContent = t.calc;
+            document.getElementById('lbl-res-tit').textContent = t.resTit;
+            document.getElementById('lbl-res-bruto').textContent = t.resBruto;
+            document.getElementById('lbl-res-ss').textContent = t.resSS;
+            document.getElementById('lbl-res-tax').textContent = t.resTax;
+            document.getElementById('ad-msg').textContent = t.ad;
+            // Avanzados
+            document.getElementById('lbl-es-irpf').textContent = t.es_irpf;
+            document.getElementById('lbl-uk-2job').textContent = t.uk_2job;
+            document.getElementById('lbl-uk-pension').textContent = t.uk_pen;
+            document.getElementById('lbl-it-reg').textContent = t.it_reg;
+            document.getElementById('lbl-it-com').textContent = t.it_com;
+            document.getElementById('lbl-pt-estado').textContent = t.pt_est;
+            document.getElementById('lbl-pt-hijos').textContent = t.pt_hijos;
+            document.getElementById('opt-pt-sol').textContent = t.opt_sol;
+            document.getElementById('opt-pt-cas').textContent = t.opt_cas;
+
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('lang-'+l).classList.add('active');
+        }
+
+        function setModo(m) {
+            modo = m;
+            ['mes','semana','horas'].forEach(x => {
+                document.getElementById('btn-'+x).className = (x===m)?'flex-1 py-3 rounded-xl bg-blue-600 font-bold text-[10px] uppercase transition-all':'flex-1 py-3 rounded-xl font-bold text-slate-500 text-[10px] uppercase transition-all';
+            });
+            changeLanguage(lang);
+        }
+
+        function togglePanel() {
+            document.getElementById('panel-avanzado').classList.toggle('hidden');
+            actualizarPanelAvanzado();
+        }
+
+        function actualizarPanelAvanzado() {
+            const p = document.getElementById('pais').value.toLowerCase();
+            document.querySelectorAll('.country-panel').forEach(panel => panel.classList.add('hidden'));
+            document.getElementById('panel-'+p).classList.remove('hidden');
+        }
+
+        function flujoCalculo() {
+            contador++;
+            if (contador === 1 || contador % 2 !== 0) {
+                const overlay = document.getElementById('ad-overlay');
+                overlay.classList.remove('hidden'); overlay.classList.add('flex');
+                let seg = 5; document.getElementById('ad-timer').textContent = seg;
+                const int = setInterval(() => {
+                    seg--; document.getElementById('ad-timer').textContent = seg;
+                    if(seg <= 0) { clearInterval(int); overlay.classList.add('hidden'); overlay.classList.remove('flex'); calcular(); }
+                }, 1000);
+            } else { calcular(); }
+        }
+
+        function calcular() {
+            const p = document.getElementById('pais').value;
+            const bBase = parseFloat(document.getElementById('input-bruto').value) || 0;
+            const t = parseFloat(document.getElementById('input-tiempo').value) || 0;
+            const simb = (p==='UK') ? '£' : '€';
+            
+            let bruto = (modo === 'horas') ? bBase * t : bBase;
+            let ss = 0, tax = 0;
+
+            if(p==='ES') {
+                ss = bruto * 0.0647;
+                const man = parseFloat(document.getElementById('val-es-irpf').value);
+                tax = !isNaN(man) ? bruto * (man/100) : (bruto > 2500 ? bruto * 0.20 : bruto * 0.15);
+            } else if(p==='UK') {
+                const pen = (parseFloat(document.getElementById('val-uk-pension').value) || 5) / 100;
+                ss = (bruto > 1048) ? (bruto - 1048) * 0.08 : 0;
+                ss += (bruto * pen);
+                tax = document.getElementById('val-uk-2job').checked ? bruto * 0.20 : (bruto > 1047 ? (bruto-1047)*0.20 : 0);
+            } else if(p==='IT') {
+                ss = bruto * 0.0919;
+                const reg = parseFloat(document.getElementById('val-it-reg').value) || 1.23;
+                const com = parseFloat(document.getElementById('val-it-com').value) || 0.8;
+                tax = (bruto * 0.23) + (bruto * (reg/100)) + (bruto * (com/100));
+            } else if(p==='PT') {
+                ss = bruto * 0.11;
+                const est = document.getElementById('val-pt-estado').value;
+                const hijos = parseInt(document.getElementById('val-pt-hijos').value) || 0;
+                let rate = (est === 'casado') ? 0.12 : 0.145;
+                tax = bruto * Math.max(0, (rate - (hijos * 0.015)));
+            }
+
+            document.getElementById('res-bruto-val').textContent = bruto.toLocaleString(undefined, {minimumFractionDigits:2}) + simb;
+            document.getElementById('res-ss-val').textContent = "-" + ss.toLocaleString(undefined, {minimumFractionDigits:2}) + simb;
+            document.getElementById('res-tax-val').textContent = "-" + tax.toLocaleString(undefined, {minimumFractionDigits:2}) + simb;
+            document.getElementById('res-neto').textContent = (bruto-ss-tax).toLocaleString(undefined, {minimumFractionDigits:2}) + simb;
+            
+            document.getElementById('res-card').classList.remove('hidden');
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
+
+        // Inicio
+        changeLanguage('es');
+    </script>
+</body>
+</html>
