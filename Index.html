@@ -3,6 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW no registrado', err));
+        });
+      }
+    </script>
     <meta http-equiv="X-Frame-Options" content="DENY">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
@@ -110,7 +120,7 @@
                 <div id="adv-PT" class="adv-panel hidden space-y-4">
                     <div class="relative">
                         <label data-i18n="pt_status" class="text-[10px] font-bold text-blue-400 uppercase block mb-2">Estado Civil</label>
-                        <select id="pt-status-val" class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl outline-none text-sm font-bold relative z-10 cursor-pointer">
+                        <select id="pt-status-val" class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl outline-none text-sm font-bold relative z-10 cursor-pointer text-white">
                             <option value="solteiro" data-i18n="pt_single">Soltero / No Casado</option>
                             <option value="casado" data-i18n="pt_married">Casado</option>
                         </select>
@@ -185,7 +195,7 @@
                 it_reg: "Addizionale Regionale (%)", it_com: "Addizionale Comunale (%)",
                 pt_status: "Stato Civile", pt_single: "Celibe / Nubile", pt_married: "Coniugato/a", pt_dep: "Figli a Carico",
                 res_title: "Stipendio Netto Stimato", res_gross: "Lordo Totale:", res_ss: "Contributi INPS:", res_tax: "Trattenute IRPEF:",
-                ad_processing: "Elaborazione in corso", ad_space: "Spazio Pubblicitario",
+                ad_processing: "Elaborazione in corso", ad_space: "Spazio Publicitario",
                 legal_disclaimer: "⚠️ Le cifre generate sono stime. Questa applicazione non fornisce consulenza fiscale o legale ufficiale. Consultare un professionista."
             },
             pt: {
