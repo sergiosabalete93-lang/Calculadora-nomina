@@ -1,4 +1,4 @@
-const CACHE_NAME = 'payroll-pro-v1';
+const CACHE_NAME = 'payroll-pro-v3';
 
 // Archivos vitales para el funcionamiento offline
 const ASSETS = [
