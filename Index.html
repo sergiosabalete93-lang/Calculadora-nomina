@@ -2,10 +2,15 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
     <meta http-equiv="X-Frame-Options" content="DENY">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-    <title>Payroll Pro - Global Security Version</title>
+    
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="manifest.json"> <title>Payroll Pro - 2026</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -14,17 +19,24 @@
         .no-select { user-select: none; -webkit-user-select: none; }
         .lang-btn.active { border-color: #60a5fa; color: #60a5fa; background: rgba(59, 130, 246, 0.15); box-shadow: 0 0 10px rgba(96, 165, 250, 0.2); }
         input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        /* Animación de carga para el anuncio */
+        .loader { border: 4px solid rgba(255,255,255,0.1); border-left-color: #3b82f6; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="bg-slate-900 text-white min-h-screen font-sans flex flex-col no-select">
 
-    <header class="p-4 bg-slate-800/90 backdrop-blur-md border-b border-slate-700 shadow-2xl sticky top-0 z-50">
+    <div id="ad-overlay" class="fixed inset-0 bg-slate-950 z-[200] hidden flex-col justify-center items-center">
+        <div class="loader mb-4"></div>
+        <h2 data-i18n="ad-text" class="text-sm font-bold text-blue-400 uppercase tracking-widest text-center px-6">Procesando cálculo...<br><span class="text-[10px] text-slate-500">(Espacio reservado para anuncio AdSense)</span></h2>
+        <p id="ad-timer" class="text-2xl font-black mt-4">5</p>
+    </div>
+
+    <header class="p-4 bg-slate-800 border-b border-slate-700 shadow-2xl sticky top-0 z-50">
         <div class="max-w-lg mx-auto flex justify-between items-center">
             <div class="flex items-center gap-2">
-                <i class="fa-solid fa-wallet text-blue-400"></i>
-                <h1 class="text-sm font-black text-blue-400 tracking-tighter uppercase">Payroll Pro <span class="text-[8px] text-slate-500">2026</span></h1>
+                <i class="fa-solid fa-calculator text-blue-400"></i>
+                <h1 class="text-sm font-black text-blue-400 tracking-tighter uppercase">Payroll Pro</h1>
             </div>
             
             <div id="lang-container" class="flex gap-1">
@@ -37,10 +49,10 @@
     </header>
 
     <main class="p-4 max-w-lg mx-auto mt-2 flex-grow w-full">
-        <div class="flex bg-slate-800 p-1 rounded-2xl mb-6 border border-slate-700 shadow-inner">
+        <div class="flex bg-slate-800 p-1 rounded-2xl mb-6 border border-slate-700">
             <button onclick="setModo('mes')" id="btn-mes" data-i18n="btn-mes" class="flex-1 py-2.5 rounded-xl bg-blue-600 font-bold text-xs uppercase transition-all">Mensual</button>
-            <button onclick="setModo('semana')" id="btn-semana" data-i18n="btn-semana" class="flex-1 py-2.5 rounded-xl font-bold text-slate-500 text-xs uppercase">Semanal</button>
-            <button onclick="setModo('horas')" id="btn-horas" data-i18n="btn-horas" class="flex-1 py-2.5 rounded-xl font-bold text-slate-500 text-xs uppercase">Por Horas</button>
+            <button onclick="setModo('semana')" id="btn-semana" data-i18n="btn-semana" class="flex-1 py-2.5 rounded-xl font-bold text-slate-500 text-xs uppercase transition-all">Semanal</button>
+            <button onclick="setModo('horas')" id="btn-horas" data-i18n="btn-horas" class="flex-1 py-2.5 rounded-xl font-bold text-slate-500 text-xs uppercase transition-all">Horas</button>
         </div>
 
         <div class="space-y-4">
@@ -69,120 +81,103 @@
                 <i class="fa-solid fa-gear mr-2"></i> <span data-i18n="btn-avanzado">Opciones Avanzadas</span>
             </button>
 
-            <div id="panel-avanzado" class="hidden space-y-4 bg-slate-800/30 p-4 rounded-2xl border border-dashed border-slate-700">
-                <div id="adv-es" class="hidden">
-                    <label data-i18n="adv-es-label" class="text-[10px] font-bold text-blue-400 uppercase block mb-2">Retención IRPF (%)</label>
-                    <input type="number" id="irpf-manual" class="w-full bg-slate-900/50 border border-slate-700 p-3 rounded-xl outline-none" placeholder="Auto (15-19%)">
+            <div id="panel-avanzado" class="hidden bg-slate-800/30 p-4 rounded-2xl border border-dashed border-slate-700 transition-all">
+                <div id="adv-es" class="adv-section hidden space-y-3">
+                    <label data-i18n="adv-es-label" class="text-[10px] font-bold text-blue-400 uppercase block">IRPF Manual (%)</label>
+                    <input type="number" id="irpf-manual" class="w-full bg-slate-900/50 border border-slate-700 p-3 rounded-xl outline-none" placeholder="Auto">
                 </div>
-                <div id="adv-uk" class="hidden">
-                    <label data-i18n="adv-uk-label" class="text-[10px] font-bold text-blue-400 uppercase block mb-2">Pension Contribution (%)</label>
-                    <input type="number" id="pension-porcentaje" class="w-full bg-slate-900/50 border border-slate-700 p-3 rounded-xl outline-none" placeholder="Default 5%">
+                <div id="adv-uk" class="adv-section hidden space-y-3">
+                    <label data-i18n="adv-uk-label" class="text-[10px] font-bold text-blue-400 uppercase block">Pension Contribution (%)</label>
+                    <input type="number" id="pension-manual" class="w-full bg-slate-900/50 border border-slate-700 p-3 rounded-xl outline-none" placeholder="Default: 5%">
+                </div>
+                <div id="adv-it" class="adv-section hidden space-y-3">
+                    <label data-i18n="adv-it-label" class="text-[10px] font-bold text-blue-400 uppercase block">Addizionale Regionale (%)</label>
+                    <input type="number" id="it-regional" class="w-full bg-slate-900/50 border border-slate-700 p-3 rounded-xl outline-none" placeholder="Ej: 1.5">
+                </div>
+                <div id="adv-pt" class="adv-section hidden space-y-3">
+                    <label data-i18n="adv-pt-label" class="text-[10px] font-bold text-blue-400 uppercase block">Dependentes (Hijos)</label>
+                    <input type="number" id="pt-hijos" class="w-full bg-slate-900/50 border border-slate-700 p-3 rounded-xl outline-none" placeholder="0">
                 </div>
             </div>
 
-            <button onclick="validarYCalcular()" data-i18n="btn-calcular" class="w-full bg-blue-600 hover:bg-blue-500 py-5 rounded-3xl text-lg font-black shadow-2xl shadow-blue-900/40 transition-all active:scale-95 uppercase tracking-widest">
+            <button onclick="procesarCalculoConAnuncio()" data-i18n="btn-calcular" class="w-full bg-blue-600 hover:bg-blue-500 py-5 rounded-3xl text-lg font-black shadow-2xl shadow-blue-900/40 active:scale-95 transition-all uppercase tracking-widest mt-2">
                 Calcular Neto
             </button>
         </div>
 
-        <section id="result-card" class="hidden mt-8 animate-fade-in">
+        <section id="result-card" class="hidden mt-8">
             <div class="bg-gradient-to-br from-blue-600 to-indigo-900 rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden">
-                <div class="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
-                
                 <p data-i18n="res-estimado" class="text-[10px] font-black text-blue-200 uppercase tracking-[0.3em] mb-2">Neto Estimado</p>
-                <h2 id="neto-display" class="text-6xl font-black text-white mb-8 tracking-tighter">0.00</h2>
-                
+                <h2 id="neto-display" class="text-6xl font-black text-white mb-6 tracking-tighter">0.00</h2>
                 <div class="space-y-4 text-xs font-bold border-t border-white/10 pt-6">
                     <div class="flex justify-between text-white/70"><span data-i18n="res-bruto">Bruto:</span><span id="bruto-display">0.00</span></div>
-                    <div class="flex justify-between text-red-300"><span><i class="fa-solid fa-shield-heart mr-2"></i><span data-i18n="res-ss">Seg. Social:</span></span><span id="ss-display">-0.00</span></div>
-                    <div class="flex justify-between text-red-300"><span><i class="fa-solid fa-landmark mr-2"></i><span data-i18n="res-tax">Impuestos:</span></span><span id="tax-display">-0.00</span></div>
+                    <div class="flex justify-between text-red-300"><span><span data-i18n="res-ss">Seg. Social:</span></span><span id="ss-display">-0.00</span></div>
+                    <div class="flex justify-between text-red-300"><span><span data-i18n="res-tax">Impuestos:</span></span><span id="tax-display">-0.00</span></div>
                 </div>
             </div>
         </section>
     </main>
 
-    <footer class="p-8 text-center opacity-50">
-        <button onclick="abrirLegal()" data-i18n="btn-legal" class="text-[9px] font-black uppercase tracking-[0.2em] hover:text-blue-400 transition-colors">Aviso Legal & Privacidad RGPD</button>
-    </footer>
-
-    <div id="modal-legal" class="fixed inset-0 bg-slate-950/98 z-[100] p-6 hidden flex-col justify-center items-center">
-        <div class="max-w-md w-full">
-            <div class="flex items-center gap-3 mb-6">
-                <i class="fa-solid fa-scale-balanced text-blue-400 text-2xl"></i>
-                <h3 data-i18n="legal-titulo" class="text-xl font-black uppercase tracking-tighter">Legal</h3>
-            </div>
-            <div id="legal-content" class="text-[11px] text-slate-400 leading-relaxed text-justify space-y-4 bg-slate-900/50 p-6 rounded-2xl border border-slate-800 mb-8 max-h-[50vh] overflow-y-auto">
-                </div>
-            <button onclick="cerrarLegal()" data-i18n="legal-btn" class="w-full bg-white text-slate-950 py-4 rounded-2xl font-black uppercase text-xs tracking-widest active:scale-95 transition-all">Cerrar</button>
-        </div>
-    </div>
-
     <script>
         "use strict";
 
+        // === 1. LÓGICA DE TRADUCCIÓN ===
         const translations = {
             es: {
                 "btn-mes": "Mensual", "btn-semana": "Semanal", "btn-horas": "Horas",
-                "label-pais": "País de Residencia Fiscal", "label-salario": "Sueldo Bruto",
-                "label-tiempo": "Días / Tiempo", "btn-avanzado": "Configuración Avanzada",
-                "btn-calcular": "Calcular Sueldo Neto", "res-estimado": "Neto a Recibir",
-                "res-bruto": "Sueldo Bruto:", "res-ss": "Seguridad Social:", "res-tax": "Impuestos IRPF:",
-                "btn-legal": "Transparencia, Privacidad y Aviso Legal", "legal-titulo": "Marco Legal Pro",
-                "legal-btn": "He leído y acepto los términos", "adv-es-label": "IRPF Manual (%)", "adv-uk-label": "Pension (%)",
-                "legal-txt": "<strong>1. Privacidad:</strong> Los datos introducidos NO se almacenan. El cálculo es local (Client-side).<br><br><strong>2. Disclaimer:</strong> Esta calculadora es una simulación basada en la normativa de 2026. No sustituye a una gestoría oficial.<br><br><strong>3. Seguridad:</strong> Aplicación protegida contra XSS y Clickjacking."
+                "label-pais": "País Fiscal", "label-salario": "Sueldo Bruto", "label-tiempo": "Días / Tiempo",
+                "btn-avanzado": "Configuración Avanzada", "btn-calcular": "Calcular Sueldo Neto",
+                "res-estimado": "Neto a Recibir", "res-bruto": "Sueldo Bruto:", "res-ss": "Seguridad Social:", "res-tax": "Impuestos (Retención):",
+                "adv-es-label": "IRPF Manual (%)", "adv-uk-label": "Pensión (%)", "adv-it-label": "Addizionale Regionale (%)", "adv-pt-label": "Número de Hijos",
+                "ad-text": "Procesando el cálculo..."
             },
             en: {
                 "btn-mes": "Monthly", "btn-semana": "Weekly", "btn-horas": "Hourly",
-                "label-pais": "Tax Residence Country", "label-salario": "Gross Salary",
-                "label-tiempo": "Days / Hours", "btn-avanzado": "Advanced Settings",
-                "btn-calcular": "Calculate Net Pay", "res-estimado": "Take-Home Pay",
-                "res-bruto": "Gross Salary:", "res-ss": "National Insurance:", "res-tax": "Income Tax:",
-                "btn-legal": "Legal Notice & GDPR Privacy", "legal-titulo": "Legal & Privacy Framework",
-                "legal-btn": "I Accept the Terms", "adv-es-label": "Manual Tax (%)", "adv-uk-label": "Pension (%)",
-                "legal-txt": "<strong>1. Privacy:</strong> Data is NOT stored. Processing is local.<br><br><strong>2. Disclaimer:</strong> This is a simulation based on 2026 rules. Not professional advice.<br><br><strong>3. Security:</strong> XSS and Clickjacking protected."
+                "label-pais": "Tax Country", "label-salario": "Gross Salary", "label-tiempo": "Days / Hours",
+                "btn-avanzado": "Advanced Settings", "btn-calcular": "Calculate Net Pay",
+                "res-estimado": "Take-Home Pay", "res-bruto": "Total Gross:", "res-ss": "National Insurance:", "res-tax": "Income Tax:",
+                "adv-es-label": "Manual Tax (%)", "adv-uk-label": "Pension (%)", "adv-it-label": "Regional Tax (%)", "adv-pt-label": "Dependents",
+                "ad-text": "Processing calculation..."
             },
             it: {
                 "btn-mes": "Mensile", "btn-semana": "Settimanale", "btn-horas": "Orario",
-                "label-pais": "Paese di Residenza Fiscale", "label-salario": "Lordo Mensile",
-                "label-tiempo": "Giorni / Ore", "btn-avanzado": "Opzioni Avanzate",
-                "btn-calcular": "Calcola Netto", "res-estimado": "Stipendio Netto",
-                "res-bruto": "Lordo Totale:", "res-ss": "Contributi INPS:", "res-tax": "Ritenuta IRPEF:",
-                "btn-legal": "Note Legali e Privacy", "legal-titulo": "Quadro Legale",
-                "legal-btn": "Accetto", "adv-es-label": "IRPF Manuale (%)", "adv-uk-label": "Pensione (%)",
-                "legal-txt": "Simulazione basata sulle normative fiscali 2026. Nessun dato viene salvato sui nostri server."
+                "label-pais": "Paese Fiscale", "label-salario": "Lordo Totale", "label-tiempo": "Giorni / Ore",
+                "btn-avanzado": "Opzioni Avanzate", "btn-calcular": "Calcola Netto",
+                "res-estimado": "Stipendio Netto", "res-bruto": "Lordo:", "res-ss": "Contributi INPS:", "res-tax": "Ritenuta IRPEF:",
+                "adv-es-label": "IRPF Manuale (%)", "adv-uk-label": "Pensione (%)", "adv-it-label": "Addizionale Regionale (%)", "adv-pt-label": "Figli a carico",
+                "ad-text": "Elaborazione in corso..."
             },
             pt: {
                 "btn-mes": "Mensal", "btn-semana": "Semanal", "btn-horas": "Por Hora",
-                "label-pais": "País de Residência Fiscal", "label-salario": "Vencimento Bruto",
-                "label-tiempo": "Dias / Horas", "btn-avanzado": "Opções Avançadas",
-                "btn-calcular": "Calcular Líquido", "res-estimado": "Salário Líquido",
-                "res-bruto": "Bruto Total:", "res-ss": "Segurança Social:", "res-tax": "Retenção IRS:",
-                "btn-legal": "Privacidade e Termos Legais", "legal-titulo": "Enquadramento Legal",
-                "legal-btn": "Aceito os Termos", "adv-es-label": "IRS Manual (%)", "adv-uk-label": "Pensão (%)",
-                "legal-txt": "Esta calculadora é uma simulação informativa. Os dados são processados localmente de acordo com o RGPD."
+                "label-pais": "País Fiscal", "label-salario": "Vencimento Bruto", "label-tiempo": "Dias / Horas",
+                "btn-avanzado": "Opções Avançadas", "btn-calcular": "Calcular Líquido",
+                "res-estimado": "Salário Líquido", "res-bruto": "Bruto Total:", "res-ss": "Segurança Social:", "res-tax": "Retenção IRS:",
+                "adv-es-label": "IRS Manual (%)", "adv-uk-label": "Pensão (%)", "adv-it-label": "Taxa Regional (%)", "adv-pt-label": "Número de Dependentes",
+                "ad-text": "A processar o cálculo..."
             }
         };
 
         let currentLang = 'es';
         let modoActual = 'mes';
+        let contadorCalculos = 0; // CONTADOR PARA ANUNCIOS
 
         function changeLanguage(lang) {
             currentLang = lang;
             document.querySelectorAll("[data-i18n]").forEach(el => {
                 const key = el.getAttribute("data-i18n");
-                el.textContent = translations[lang][key];
+                if (translations[lang][key]) el.innerHTML = translations[lang][key];
             });
-            document.getElementById("legal-content").innerHTML = translations[lang]['legal-txt'];
             document.querySelectorAll(".lang-btn").forEach(btn => btn.classList.remove('active'));
             document.getElementById('lang-' + lang).classList.add('active');
             actualizarLabels();
+            actualizarOpcionesAvanzadas();
         }
 
         function setModo(modo) {
             modoActual = modo;
             ['mes', 'semana', 'horas'].forEach(m => {
                 const b = document.getElementById('btn-' + m);
-                b.className = (m === modo) ? 'flex-1 py-2.5 rounded-xl bg-blue-600 font-bold text-xs uppercase' : 'flex-1 py-2.5 rounded-xl font-bold text-slate-500 text-xs uppercase';
+                b.className = (m === modo) ? 'flex-1 py-2.5 rounded-xl bg-blue-600 font-bold text-xs uppercase transition-all' : 'flex-1 py-2.5 rounded-xl font-bold text-slate-500 text-xs uppercase transition-all';
             });
             actualizarLabels();
         }
@@ -191,7 +186,7 @@
             const lSal = document.getElementById('label-salario');
             const lTime = document.getElementById('label-tiempo');
             if(modoActual === 'horas') {
-                lSal.textContent = (currentLang === 'en') ? 'Hourly Rate' : (currentLang === 'it') ? 'Tariffa Oraria' : 'Precio/Hora';
+                lSal.textContent = (currentLang === 'en') ? 'Hourly Rate' : (currentLang === 'it') ? 'Tariffa Oraria' : (currentLang === 'pt') ? 'Preço/Hora' : 'Precio/Hora';
                 lTime.textContent = (currentLang === 'en') ? 'Total Hours' : 'Total Horas';
             } else {
                 lSal.textContent = translations[currentLang]['label-salario'];
@@ -199,62 +194,124 @@
             }
         }
 
-        function validarYCalcular() {
-            const s = document.getElementById('salario');
-            const t = document.getElementById('tiempo');
-            // Sanitización: Solo positivos
-            if (s.value < 0) s.value = 0;
-            if (t.value < 0) t.value = 0;
-            calcular();
+        // === 2. LÓGICA DE INTERFAZ CORREGIDA ===
+        function toggleAvanzado() { 
+            const panel = document.getElementById('panel-avanzado');
+            panel.classList.toggle('hidden');
+            if (!panel.classList.contains('hidden')) {
+                actualizarOpcionesAvanzadas();
+            }
         }
 
-        function calcular() {
+        function actualizarOpcionesAvanzadas() {
+            const pais = document.getElementById('pais').value.toLowerCase();
+            // Ocultar todos los sub-paneles primero de forma segura
+            document.querySelectorAll('.adv-section').forEach(el => el.classList.add('hidden'));
+            // Mostrar solo el del país seleccionado
+            const target = document.getElementById('adv-' + pais);
+            if(target) target.classList.remove('hidden');
+        }
+
+        // === 3. LÓGICA DE ANUNCIOS (CONTADOR) ===
+        function procesarCalculoConAnuncio() {
+            // Sanitización de entradas
+            const sInput = document.getElementById('salario');
+            const tInput = document.getElementById('tiempo');
+            if (sInput.value < 0) sInput.value = 0;
+            if (tInput.value < 0) tInput.value = 0;
+
+            contadorCalculos++;
+
+            // Regla de anuncios: 1er cálculo y luego cada 2 cálculos (1, 3, 5, 7...)
+            if (contadorCalculos === 1 || contadorCalculos % 2 !== 0) {
+                mostrarOverlayAnuncio(5); // 5 segundos de espera
+            } else {
+                ejecutarCalculoMatematico(); // Cálculo directo
+            }
+        }
+
+        function mostrarOverlayAnuncio(segundos) {
+            const overlay = document.getElementById('ad-overlay');
+            const timerText = document.getElementById('ad-timer');
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex');
+            
+            let tiempoRestante = segundos;
+            timerText.textContent = tiempoRestante;
+
+            const intervalo = setInterval(() => {
+                tiempoRestante--;
+                timerText.textContent = tiempoRestante;
+                if (tiempoRestante <= 0) {
+                    clearInterval(intervalo);
+                    overlay.classList.add('hidden');
+                    overlay.classList.remove('flex');
+                    ejecutarCalculoMatematico();
+                }
+            }, 1000);
+        }
+
+        // === 4. CÁLCULO BLINDADO (MATEMÁTICAS) ===
+        function ejecutarCalculoMatematico() {
             const pais = document.getElementById('pais').value;
             const simb = (pais === 'UK') ? '£' : '€';
-            const s = parseFloat(document.getElementById('salario').value) || 0;
-            const t = parseFloat(document.getElementById('tiempo').value) || 0;
+            const s = Math.abs(parseFloat(document.getElementById('salario').value)) || 0;
+            const t = Math.abs(parseFloat(document.getElementById('tiempo').value)) || 0;
             
             let bruto = (modoActual === 'horas') ? s * t : s;
             let ss = 0, tax = 0;
 
-            if(pais === 'ES') {
+            if (pais === 'ES') {
                 ss = bruto * 0.0647;
-                const m = document.getElementById('irpf-manual').value;
-                tax = (m !== "") ? bruto * (parseFloat(m)/100) : bruto * (bruto > 3000 ? 0.22 : 0.15);
-            } else if(pais === 'UK') {
+                const m = parseFloat(document.getElementById('irpf-manual').value);
+                tax = (!isNaN(m)) ? bruto * (m/100) : bruto * (bruto > 3000 ? 0.20 : 0.15);
+            } 
+            else if (pais === 'UK') {
+                const pensionRate = parseFloat(document.getElementById('pension-manual').value) || 0;
+                let pension = bruto * (pensionRate / 100);
                 ss = (bruto > 1048) ? (bruto - 1048) * 0.08 : 0;
                 tax = (bruto > 1047) ? (bruto - 1047) * 0.20 : 0;
-            } else if(pais === 'IT') {
+                ss += pension; // Sumamos la pensión a deducciones
+            } 
+            else if (pais === 'IT') {
                 ss = bruto * 0.0919;
-                tax = bruto * 0.23;
-            } else if(pais === 'PT') {
+                const reg = parseFloat(document.getElementById('it-regional').value) || 0;
+                tax = (bruto * 0.23) + (bruto * (reg / 100));
+            } 
+            else if (pais === 'PT') {
                 ss = bruto * 0.11;
-                tax = bruto * 0.14;
+                const hijos = parseInt(document.getElementById('pt-hijos').value) || 0;
+                let baseTaxRate = 0.14;
+                // Descuento simple por hijos (simulación)
+                let taxRate = Math.max(0, baseTaxRate - (hijos * 0.015)); 
+                tax = bruto * taxRate;
             }
 
             const neto = bruto - ss - tax;
 
-            // Renderizado Seguro
-            document.getElementById('bruto-display').textContent = bruto.toLocaleString(undefined, {minimumFractionDigits: 2}) + simb;
-            document.getElementById('neto-display').textContent = neto.toLocaleString(undefined, {minimumFractionDigits: 2}) + simb;
-            document.getElementById('ss-display').textContent = '-' + ss.toLocaleString(undefined, {minimumFractionDigits: 2}) + simb;
-            document.getElementById('tax-display').textContent = '-' + tax.toLocaleString(undefined, {minimumFractionDigits: 2}) + simb;
+            // Inserción segura en el DOM
+            document.getElementById('bruto-display').textContent = bruto.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) + simb;
+            document.getElementById('neto-display').textContent = neto.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) + simb;
+            document.getElementById('ss-display').textContent = '-' + ss.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) + simb;
+            document.getElementById('tax-display').textContent = '-' + tax.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) + simb;
             
             document.getElementById('result-card').classList.remove('hidden');
             window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
         }
 
-        function toggleAvanzado() { document.getElementById('panel-avanzado').classList.toggle('hidden'); }
-        function actualizarOpcionesAvanzadas() {
-            const p = document.getElementById('pais').value;
-            ['adv-es', 'adv-uk'].forEach(id => document.getElementById(id)?.classList.add('hidden'));
-            document.getElementById('adv-' + p.toLowerCase())?.classList.remove('hidden');
-        }
-        function abrirLegal() { document.getElementById('modal-legal').style.display = 'flex'; }
-        function cerrarLegal() { document.getElementById('modal-legal').style.display = 'none'; }
-
+        // Inicialización y Anti-Clickjacking
         if (window.top !== window.self) { window.top.location = window.self.location; }
         changeLanguage('es');
+        
+        // Registro Básico Service Worker para PWA (Para que salte el prompt de instalar)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                // Requiere que subas un archivo vacío llamado sw.js al servidor luego
+                navigator.serviceWorker.register('sw.js').catch(() => {
+                    console.log("PWA lista para despliegue.");
+                });
+            });
+        }
     </script>
 </body>
 </html>
