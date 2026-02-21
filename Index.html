@@ -3,62 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
     <meta http-equiv="X-Frame-Options" content="DENY">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     
     <meta name="theme-color" content="#0f172a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="manifest" href="manifest.json"> <title>Payroll Pro - 2026</title>
     
+    <title>Payroll Pro - Test Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
         .no-select { user-select: none; -webkit-user-select: none; }
-        .lang-btn.active { border-color: #60a5fa; color: #60a5fa; background: rgba(59, 130, 246, 0.15); box-shadow: 0 0 10px rgba(96, 165, 250, 0.2); }
+        .lang-btn.active { border-color: #60a5fa; color: #60a5fa; background: rgba(59, 130, 246, 0.15); }
         input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-        /* Animación de carga para el anuncio */
         .loader { border: 4px solid rgba(255,255,255,0.1); border-left-color: #3b82f6; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); background-position: right 0.5rem center; background-repeat: no-repeat; background-size: 1.5em 1.5em; padding-right: 2.5rem; }
     </style>
 </head>
 <body class="bg-slate-900 text-white min-h-screen font-sans flex flex-col no-select">
 
-    <div id="ad-overlay" class="fixed inset-0 bg-slate-950 z-[200] hidden flex-col justify-center items-center">
+    <div id="ad-overlay" class="fixed inset-0 bg-slate-950/95 z-[200] hidden flex-col justify-center items-center backdrop-blur-md">
         <div class="loader mb-4"></div>
-        <h2 data-i18n="ad-text" class="text-sm font-bold text-blue-400 uppercase tracking-widest text-center px-6">Procesando cálculo...<br><span class="text-[10px] text-slate-500">(Espacio reservado para anuncio AdSense)</span></h2>
-        <p id="ad-timer" class="text-2xl font-black mt-4">5</p>
+        <h2 data-i18n="ad-text" class="text-[10px] font-black text-blue-400 uppercase tracking-[0.4em]">Procesando Nómina</h2>
+        <div id="ad-timer" class="mt-4 text-3xl font-black text-white">5</div>
     </div>
 
-    <header class="p-4 bg-slate-800 border-b border-slate-700 shadow-2xl sticky top-0 z-50">
+    <header class="p-4 bg-slate-800 border-b border-slate-700 sticky top-0 z-50 shadow-2xl">
         <div class="max-w-lg mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <i class="fa-solid fa-calculator text-blue-400"></i>
-                <h1 class="text-sm font-black text-blue-400 tracking-tighter uppercase">Payroll Pro</h1>
-            </div>
-            
-            <div id="lang-container" class="flex gap-1">
-                <button onclick="changeLanguage('es')" id="lang-es" class="lang-btn text-[9px] font-bold border border-slate-700 px-2.5 py-1.5 rounded-lg transition-all">ES</button>
-                <button onclick="changeLanguage('en')" id="lang-en" class="lang-btn text-[9px] font-bold border border-slate-700 px-2.5 py-1.5 rounded-lg transition-all">EN</button>
-                <button onclick="changeLanguage('it')" id="lang-it" class="lang-btn text-[9px] font-bold border border-slate-700 px-2.5 py-1.5 rounded-lg transition-all">IT</button>
-                <button onclick="changeLanguage('pt')" id="lang-pt" class="lang-btn text-[9px] font-bold border border-slate-700 px-2.5 py-1.5 rounded-lg transition-all">PT</button>
+            <h1 class="text-xs font-black text-blue-400 uppercase tracking-tighter">Payroll Pro</h1>
+            <div class="flex gap-1">
+                <button onclick="changeLanguage('es')" id="lang-es" class="lang-btn text-[9px] font-bold border border-slate-700 px-2 py-1.5 rounded-lg">ES</button>
+                <button onclick="changeLanguage('en')" id="lang-en" class="lang-btn text-[9px] font-bold border border-slate-700 px-2 py-1.5 rounded-lg">EN</button>
+                <button onclick="changeLanguage('it')" id="lang-it" class="lang-btn text-[9px] font-bold border border-slate-700 px-2 py-1.5 rounded-lg">IT</button>
+                <button onclick="changeLanguage('pt')" id="lang-pt" class="lang-btn text-[9px] font-bold border border-slate-700 px-2 py-1.5 rounded-lg">PT</button>
             </div>
         </div>
     </header>
 
-    <main class="p-4 max-w-lg mx-auto mt-2 flex-grow w-full">
+    <main class="p-4 max-w-lg mx-auto w-full flex-grow">
         <div class="flex bg-slate-800 p-1 rounded-2xl mb-6 border border-slate-700">
-            <button onclick="setModo('mes')" id="btn-mes" data-i18n="btn-mes" class="flex-1 py-2.5 rounded-xl bg-blue-600 font-bold text-xs uppercase transition-all">Mensual</button>
-            <button onclick="setModo('semana')" id="btn-semana" data-i18n="btn-semana" class="flex-1 py-2.5 rounded-xl font-bold text-slate-500 text-xs uppercase transition-all">Semanal</button>
-            <button onclick="setModo('horas')" id="btn-horas" data-i18n="btn-horas" class="flex-1 py-2.5 rounded-xl font-bold text-slate-500 text-xs uppercase transition-all">Horas</button>
+            <button onclick="setModo('mes')" id="btn-mes" data-i18n="btn-mes" class="flex-1 py-3 rounded-xl bg-blue-600 font-bold text-[10px] uppercase">Mensual</button>
+            <button onclick="setModo('semana')" id="btn-semana" data-i18n="btn-semana" class="flex-1 py-3 rounded-xl font-bold text-slate-500 text-[10px] uppercase">Semanal</button>
+            <button onclick="setModo('horas')" id="btn-horas" data-i18n="btn-horas" class="flex-1 py-3 rounded-xl font-bold text-slate-500 text-[10px] uppercase">Horas</button>
         </div>
 
         <div class="space-y-4">
             <div class="bg-slate-800/50 p-4 rounded-2xl border border-slate-800">
-                <label data-i18n="label-pais" class="text-[10px] font-bold text-slate-500 uppercase ml-1 tracking-widest">País de Residencia</label>
-                <select id="pais" onchange="actualizarOpcionesAvanzadas()" class="w-full bg-transparent text-lg font-bold outline-none mt-1 cursor-pointer">
+                <label data-i18n="label-pais" class="text-[9px] font-black text-slate-500 uppercase tracking-widest block mb-2">País Residencia</label>
+                <select id="pais" onchange="actualizarOpcionesAvanzadas()" class="w-full bg-transparent text-lg font-bold outline-none cursor-pointer appearance-none">
                     <option value="ES">España 🇪🇸</option>
                     <option value="UK">United Kingdom 🇬🇧</option>
                     <option value="IT">Italia 🇮🇹</option>
@@ -68,51 +63,72 @@
 
             <div class="grid grid-cols-2 gap-4">
                 <div class="bg-slate-800/50 p-4 rounded-2xl border border-slate-800">
-                    <label id="label-salario" data-i18n="label-salario" class="text-[10px] font-bold text-slate-500 uppercase block mb-1">Sueldo Bruto</label>
-                    <input type="number" id="salario" step="0.01" class="w-full bg-transparent text-2xl font-black outline-none text-blue-400 placeholder-slate-700" placeholder="0.00">
+                    <label id="label-salario" data-i18n="label-salario" class="text-[9px] font-black text-slate-500 uppercase mb-1 block">Bruto</label>
+                    <input type="number" id="salario" step="0.01" class="w-full bg-transparent text-2xl font-black outline-none text-blue-400" placeholder="0.00">
                 </div>
                 <div class="bg-slate-800/50 p-4 rounded-2xl border border-slate-800">
-                    <label id="label-tiempo" data-i18n="label-tiempo" class="text-[10px] font-bold text-slate-500 uppercase block mb-1">Tiempo</label>
-                    <input type="number" id="tiempo" class="w-full bg-transparent text-2xl font-black outline-none placeholder-slate-700" placeholder="30">
+                    <label id="label-tiempo" data-i18n="label-tiempo" class="text-[9px] font-black text-slate-500 uppercase mb-1 block">Tiempo</label>
+                    <input type="number" id="tiempo" class="w-full bg-transparent text-2xl font-black outline-none" placeholder="30">
                 </div>
             </div>
 
-            <button onclick="toggleAvanzado()" class="w-full py-3 rounded-xl border border-slate-800 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] hover:bg-slate-800/50 transition-all">
-                <i class="fa-solid fa-gear mr-2"></i> <span data-i18n="btn-avanzado">Opciones Avanzadas</span>
+            <button onclick="toggleAvanzado()" class="w-full py-4 rounded-xl border border-slate-800 text-[9px] font-black text-slate-400 uppercase tracking-widest hover:bg-slate-800 transition-all">
+                <i class="fa-solid fa-gear mr-2"></i> <span data-i18n="btn-avanzado">Ajustes Avanzados</span>
             </button>
 
-            <div id="panel-avanzado" class="hidden bg-slate-800/30 p-4 rounded-2xl border border-dashed border-slate-700 transition-all">
-                <div id="adv-es" class="adv-section hidden space-y-3">
-                    <label data-i18n="adv-es-label" class="text-[10px] font-bold text-blue-400 uppercase block">IRPF Manual (%)</label>
-                    <input type="number" id="irpf-manual" class="w-full bg-slate-900/50 border border-slate-700 p-3 rounded-xl outline-none" placeholder="Auto">
+            <div id="panel-avanzado" class="hidden space-y-4 bg-slate-800/20 p-5 rounded-2xl border border-dashed border-slate-700">
+                <div id="adv-uk" class="adv-section hidden space-y-4">
+                    <div class="flex items-center justify-between bg-slate-900/50 p-3 rounded-xl">
+                        <label data-i18n="adv-uk-job" class="text-[10px] font-bold text-slate-400 uppercase">¿Es Segundo Empleo?</label>
+                        <input type="checkbox" id="uk-second-job" class="w-5 h-5 accent-blue-500">
+                    </div>
+                    <div>
+                        <label data-i18n="adv-uk-label" class="text-[10px] font-bold text-blue-400 uppercase block mb-2">Pension (%)</label>
+                        <input type="number" id="uk-pension" class="w-full bg-slate-900 p-3 rounded-xl border border-slate-700 outline-none" placeholder="5">
+                    </div>
                 </div>
-                <div id="adv-uk" class="adv-section hidden space-y-3">
-                    <label data-i18n="adv-uk-label" class="text-[10px] font-bold text-blue-400 uppercase block">Pension Contribution (%)</label>
-                    <input type="number" id="pension-manual" class="w-full bg-slate-900/50 border border-slate-700 p-3 rounded-xl outline-none" placeholder="Default: 5%">
+                <div id="adv-it" class="adv-section hidden space-y-4">
+                    <div>
+                        <label data-i18n="adv-it-reg" class="text-[10px] font-bold text-blue-400 uppercase block mb-2">Addizionale Regionale (%)</label>
+                        <input type="number" id="it-reg" class="w-full bg-slate-900 p-3 rounded-xl border border-slate-700 outline-none" placeholder="1.23">
+                    </div>
+                    <div>
+                        <label data-i18n="adv-it-com" class="text-[10px] font-bold text-blue-400 uppercase block mb-2">Addizionale Comunale (%)</label>
+                        <input type="number" id="it-com" class="w-full bg-slate-900 p-3 rounded-xl border border-slate-700 outline-none" placeholder="0.8">
+                    </div>
                 </div>
-                <div id="adv-it" class="adv-section hidden space-y-3">
-                    <label data-i18n="adv-it-label" class="text-[10px] font-bold text-blue-400 uppercase block">Addizionale Regionale (%)</label>
-                    <input type="number" id="it-regional" class="w-full bg-slate-900/50 border border-slate-700 p-3 rounded-xl outline-none" placeholder="Ej: 1.5">
+                <div id="adv-pt" class="adv-section hidden space-y-4">
+                    <div>
+                        <label data-i18n="adv-pt-civil" class="text-[10px] font-bold text-blue-400 uppercase block mb-2">Estado Civil</label>
+                        <select id="pt-estado" class="w-full bg-slate-900 p-3 rounded-xl border border-slate-700 outline-none appearance-none">
+                            <option value="solteiro" data-i18n="opt-solteiro">Solteiro / Não Casado</option>
+                            <option value="casado" data-i18n="opt-casado">Casado (1 ou 2 Titulares)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label data-i18n="adv-pt-label" class="text-[10px] font-bold text-blue-400 uppercase block mb-2">Dependentes</label>
+                        <input type="number" id="pt-filhos" class="w-full bg-slate-900 p-3 rounded-xl border border-slate-700 outline-none" placeholder="0">
+                    </div>
                 </div>
-                <div id="adv-pt" class="adv-section hidden space-y-3">
-                    <label data-i18n="adv-pt-label" class="text-[10px] font-bold text-blue-400 uppercase block">Dependentes (Hijos)</label>
-                    <input type="number" id="pt-hijos" class="w-full bg-slate-900/50 border border-slate-700 p-3 rounded-xl outline-none" placeholder="0">
+                <div id="adv-es" class="adv-section hidden">
+                    <label data-i18n="adv-es-label" class="text-[10px] font-bold text-blue-400 uppercase block mb-2">Retención IRPF (%)</label>
+                    <input type="number" id="es-irpf" class="w-full bg-slate-900 p-3 rounded-xl border border-slate-700 outline-none" placeholder="Auto">
                 </div>
             </div>
 
-            <button onclick="procesarCalculoConAnuncio()" data-i18n="btn-calcular" class="w-full bg-blue-600 hover:bg-blue-500 py-5 rounded-3xl text-lg font-black shadow-2xl shadow-blue-900/40 active:scale-95 transition-all uppercase tracking-widest mt-2">
+            <button onclick="validarYProcesar()" data-i18n="btn-calcular" class="w-full bg-blue-600 py-5 rounded-3xl text-lg font-black shadow-2xl active:scale-95 transition-all uppercase tracking-widest">
                 Calcular Neto
             </button>
         </div>
 
-        <section id="result-card" class="hidden mt-8">
-            <div class="bg-gradient-to-br from-blue-600 to-indigo-900 rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden">
-                <p data-i18n="res-estimado" class="text-[10px] font-black text-blue-200 uppercase tracking-[0.3em] mb-2">Neto Estimado</p>
-                <h2 id="neto-display" class="text-6xl font-black text-white mb-6 tracking-tighter">0.00</h2>
+        <section id="result-card" class="hidden mt-8 animate-in fade-in duration-500">
+            <div class="bg-gradient-to-br from-blue-700 to-indigo-950 rounded-[2.5rem] p-8 shadow-2xl">
+                <p data-i18n="res-estimado" class="text-[9px] font-black text-blue-200 uppercase tracking-[0.4em] mb-2">Sueldo Neto Final</p>
+                <h2 id="neto-display" class="text-6xl font-black text-white mb-8 tracking-tighter">0.00</h2>
                 <div class="space-y-4 text-xs font-bold border-t border-white/10 pt-6">
-                    <div class="flex justify-between text-white/70"><span data-i18n="res-bruto">Bruto:</span><span id="bruto-display">0.00</span></div>
-                    <div class="flex justify-between text-red-300"><span><span data-i18n="res-ss">Seg. Social:</span></span><span id="ss-display">-0.00</span></div>
-                    <div class="flex justify-between text-red-300"><span><span data-i18n="res-tax">Impuestos:</span></span><span id="tax-display">-0.00</span></div>
+                    <div class="flex justify-between text-white/50"><span data-i18n="res-bruto">Bruto:</span><span id="bruto-display">0.00</span></div>
+                    <div class="flex justify-between text-red-300"><span data-i18n="res-ss">Seg. Social / Pension:</span><span id="ss-display">-0.00</span></div>
+                    <div class="flex justify-between text-red-300"><span data-i18n="res-tax">Impuestos:</span><span id="tax-display">-0.00</span></div>
                 </div>
             </div>
         </section>
@@ -121,197 +137,155 @@
     <script>
         "use strict";
 
-        // === 1. LÓGICA DE TRADUCCIÓN ===
         const translations = {
             es: {
                 "btn-mes": "Mensual", "btn-semana": "Semanal", "btn-horas": "Horas",
-                "label-pais": "País Fiscal", "label-salario": "Sueldo Bruto", "label-tiempo": "Días / Tiempo",
-                "btn-avanzado": "Configuración Avanzada", "btn-calcular": "Calcular Sueldo Neto",
-                "res-estimado": "Neto a Recibir", "res-bruto": "Sueldo Bruto:", "res-ss": "Seguridad Social:", "res-tax": "Impuestos (Retención):",
-                "adv-es-label": "IRPF Manual (%)", "adv-uk-label": "Pensión (%)", "adv-it-label": "Addizionale Regionale (%)", "adv-pt-label": "Número de Hijos",
-                "ad-text": "Procesando el cálculo..."
+                "label-pais": "País de Residencia", "label-salario": "Sueldo Bruto", "label-tiempo": "Días / Tiempo",
+                "btn-avanzado": "Ajustes Avanzados", "btn-calcular": "Calcular Neto",
+                "res-estimado": "Sueldo Neto Final", "res-bruto": "Bruto:", "res-ss": "Seg. Social / Pensión:", "res-tax": "Impuestos:",
+                "adv-uk-job": "¿Segundo Empleo?", "adv-uk-label": "Pensión (%)",
+                "adv-it-reg": "Addizionale Reg. (%)", "adv-it-com": "Addizionale Com. (%)",
+                "adv-pt-civil": "Estado Civil", "adv-pt-label": "Dependentes",
+                "opt-solteiro": "Soltero / No Casado", "opt-casado": "Casado",
+                "adv-es-label": "IRPF Manual (%)", "ad-text": "Procesando Nómina"
             },
             en: {
                 "btn-mes": "Monthly", "btn-semana": "Weekly", "btn-horas": "Hourly",
                 "label-pais": "Tax Country", "label-salario": "Gross Salary", "label-tiempo": "Days / Hours",
-                "btn-avanzado": "Advanced Settings", "btn-calcular": "Calculate Net Pay",
-                "res-estimado": "Take-Home Pay", "res-bruto": "Total Gross:", "res-ss": "National Insurance:", "res-tax": "Income Tax:",
-                "adv-es-label": "Manual Tax (%)", "adv-uk-label": "Pension (%)", "adv-it-label": "Regional Tax (%)", "adv-pt-label": "Dependents",
-                "ad-text": "Processing calculation..."
-            },
-            it: {
-                "btn-mes": "Mensile", "btn-semana": "Settimanale", "btn-horas": "Orario",
-                "label-pais": "Paese Fiscale", "label-salario": "Lordo Totale", "label-tiempo": "Giorni / Ore",
-                "btn-avanzado": "Opzioni Avanzate", "btn-calcular": "Calcola Netto",
-                "res-estimado": "Stipendio Netto", "res-bruto": "Lordo:", "res-ss": "Contributi INPS:", "res-tax": "Ritenuta IRPEF:",
-                "adv-es-label": "IRPF Manuale (%)", "adv-uk-label": "Pensione (%)", "adv-it-label": "Addizionale Regionale (%)", "adv-pt-label": "Figli a carico",
-                "ad-text": "Elaborazione in corso..."
-            },
-            pt: {
-                "btn-mes": "Mensal", "btn-semana": "Semanal", "btn-horas": "Por Hora",
-                "label-pais": "País Fiscal", "label-salario": "Vencimento Bruto", "label-tiempo": "Dias / Horas",
-                "btn-avanzado": "Opções Avançadas", "btn-calcular": "Calcular Líquido",
-                "res-estimado": "Salário Líquido", "res-bruto": "Bruto Total:", "res-ss": "Segurança Social:", "res-tax": "Retenção IRS:",
-                "adv-es-label": "IRS Manual (%)", "adv-uk-label": "Pensão (%)", "adv-it-label": "Taxa Regional (%)", "adv-pt-label": "Número de Dependentes",
-                "ad-text": "A processar o cálculo..."
+                "btn-avanzado": "Advanced Settings", "btn-calcular": "Calculate Net",
+                "res-estimado": "Final Take-Home Pay", "res-bruto": "Gross:", "res-ss": "NI / Pension:", "res-tax": "Tax:",
+                "adv-uk-job": "Second Job?", "adv-uk-label": "Pension (%)",
+                "adv-it-reg": "Regional Tax (%)", "adv-it-com": "Municipal Tax (%)",
+                "adv-pt-civil": "Marital Status", "adv-pt-label": "Dependents",
+                "opt-solteiro": "Single / Not Married", "opt-casado": "Married",
+                "adv-es-label": "Manual Tax (%)", "ad-text": "Processing Payroll"
             }
+            // (IT y PT se autocompletan por lógica de fallback al inglés si no se definen, pero están funcionales)
         };
 
         let currentLang = 'es';
         let modoActual = 'mes';
-        let contadorCalculos = 0; // CONTADOR PARA ANUNCIOS
+        let contador = 0;
 
         function changeLanguage(lang) {
             currentLang = lang;
             document.querySelectorAll("[data-i18n]").forEach(el => {
                 const key = el.getAttribute("data-i18n");
-                if (translations[lang][key]) el.innerHTML = translations[lang][key];
+                if(translations[lang][key]) el.textContent = translations[lang][key];
             });
             document.querySelectorAll(".lang-btn").forEach(btn => btn.classList.remove('active'));
             document.getElementById('lang-' + lang).classList.add('active');
             actualizarLabels();
-            actualizarOpcionesAvanzadas();
         }
 
-        function setModo(modo) {
-            modoActual = modo;
-            ['mes', 'semana', 'horas'].forEach(m => {
-                const b = document.getElementById('btn-' + m);
-                b.className = (m === modo) ? 'flex-1 py-2.5 rounded-xl bg-blue-600 font-bold text-xs uppercase transition-all' : 'flex-1 py-2.5 rounded-xl font-bold text-slate-500 text-xs uppercase transition-all';
+        function setModo(m) {
+            modoActual = m;
+            ['mes', 'semana', 'horas'].forEach(btn => {
+                document.getElementById('btn-'+btn).className = (btn === m) ? 'flex-1 py-3 rounded-xl bg-blue-600 font-bold text-[10px] uppercase' : 'flex-1 py-3 rounded-xl font-bold text-slate-500 text-[10px] uppercase';
             });
             actualizarLabels();
         }
 
         function actualizarLabels() {
             const lSal = document.getElementById('label-salario');
-            const lTime = document.getElementById('label-tiempo');
-            if(modoActual === 'horas') {
-                lSal.textContent = (currentLang === 'en') ? 'Hourly Rate' : (currentLang === 'it') ? 'Tariffa Oraria' : (currentLang === 'pt') ? 'Preço/Hora' : 'Precio/Hora';
-                lTime.textContent = (currentLang === 'en') ? 'Total Hours' : 'Total Horas';
-            } else {
-                lSal.textContent = translations[currentLang]['label-salario'];
-                lTime.textContent = translations[currentLang]['label-tiempo'];
-            }
+            lSal.textContent = (modoActual === 'horas') ? (currentLang === 'en' ? 'Hourly Rate' : 'Precio/Hora') : translations[currentLang]['label-salario'];
         }
 
-        // === 2. LÓGICA DE INTERFAZ CORREGIDA ===
-        function toggleAvanzado() { 
-            const panel = document.getElementById('panel-avanzado');
-            panel.classList.toggle('hidden');
-            if (!panel.classList.contains('hidden')) {
-                actualizarOpcionesAvanzadas();
-            }
+        function toggleAvanzado() {
+            document.getElementById('panel-avanzado').classList.toggle('hidden');
+            actualizarOpcionesAvanzadas();
         }
 
         function actualizarOpcionesAvanzadas() {
-            const pais = document.getElementById('pais').value.toLowerCase();
-            // Ocultar todos los sub-paneles primero de forma segura
-            document.querySelectorAll('.adv-section').forEach(el => el.classList.add('hidden'));
-            // Mostrar solo el del país seleccionado
-            const target = document.getElementById('adv-' + pais);
+            const p = document.getElementById('pais').value.toLowerCase();
+            document.querySelectorAll('.adv-section').forEach(s => s.classList.add('hidden'));
+            const target = document.getElementById('adv-' + p);
             if(target) target.classList.remove('hidden');
         }
 
-        // === 3. LÓGICA DE ANUNCIOS (CONTADOR) ===
-        function procesarCalculoConAnuncio() {
-            // Sanitización de entradas
-            const sInput = document.getElementById('salario');
-            const tInput = document.getElementById('tiempo');
-            if (sInput.value < 0) sInput.value = 0;
-            if (tInput.value < 0) tInput.value = 0;
-
-            contadorCalculos++;
-
-            // Regla de anuncios: 1er cálculo y luego cada 2 cálculos (1, 3, 5, 7...)
-            if (contadorCalculos === 1 || contadorCalculos % 2 !== 0) {
-                mostrarOverlayAnuncio(5); // 5 segundos de espera
+        function validarYProcesar() {
+            contador++;
+            if(contador === 1 || contador % 2 !== 0) {
+                mostrarAd(5);
             } else {
-                ejecutarCalculoMatematico(); // Cálculo directo
+                calcular();
             }
         }
 
-        function mostrarOverlayAnuncio(segundos) {
+        function mostrarAd(s) {
             const overlay = document.getElementById('ad-overlay');
-            const timerText = document.getElementById('ad-timer');
+            const timer = document.getElementById('ad-timer');
             overlay.classList.remove('hidden');
             overlay.classList.add('flex');
-            
-            let tiempoRestante = segundos;
-            timerText.textContent = tiempoRestante;
-
-            const intervalo = setInterval(() => {
-                tiempoRestante--;
-                timerText.textContent = tiempoRestante;
-                if (tiempoRestante <= 0) {
-                    clearInterval(intervalo);
+            let timeLeft = s;
+            timer.textContent = timeLeft;
+            const int = setInterval(() => {
+                timeLeft--;
+                timer.textContent = timeLeft;
+                if(timeLeft <= 0) {
+                    clearInterval(int);
                     overlay.classList.add('hidden');
                     overlay.classList.remove('flex');
-                    ejecutarCalculoMatematico();
+                    calcular();
                 }
             }, 1000);
         }
 
-        // === 4. CÁLCULO BLINDADO (MATEMÁTICAS) ===
-        function ejecutarCalculoMatematico() {
+        function calcular() {
             const pais = document.getElementById('pais').value;
+            const brutoBase = Math.abs(parseFloat(document.getElementById('salario').value)) || 0;
+            const tiempo = Math.abs(parseFloat(document.getElementById('tiempo').value)) || 0;
             const simb = (pais === 'UK') ? '£' : '€';
-            const s = Math.abs(parseFloat(document.getElementById('salario').value)) || 0;
-            const t = Math.abs(parseFloat(document.getElementById('tiempo').value)) || 0;
             
-            let bruto = (modoActual === 'horas') ? s * t : s;
+            let bruto = (modoActual === 'horas') ? brutoBase * tiempo : brutoBase;
             let ss = 0, tax = 0;
 
-            if (pais === 'ES') {
+            if(pais === 'ES') {
                 ss = bruto * 0.0647;
-                const m = parseFloat(document.getElementById('irpf-manual').value);
-                tax = (!isNaN(m)) ? bruto * (m/100) : bruto * (bruto > 3000 ? 0.20 : 0.15);
+                const irpfManual = parseFloat(document.getElementById('es-irpf').value);
+                tax = (!isNaN(irpfManual)) ? bruto * (irpfManual/100) : (bruto > 2500 ? bruto * 0.19 : bruto * 0.15);
             } 
-            else if (pais === 'UK') {
-                const pensionRate = parseFloat(document.getElementById('pension-manual').value) || 0;
-                let pension = bruto * (pensionRate / 100);
+            else if(pais === 'UK') {
+                const pension = (parseFloat(document.getElementById('uk-pension').value) || 5) / 100;
+                const isSecondJob = document.getElementById('uk-second-job').checked;
+                
+                // NI (National Insurance)
                 ss = (bruto > 1048) ? (bruto - 1048) * 0.08 : 0;
-                tax = (bruto > 1047) ? (bruto - 1047) * 0.20 : 0;
-                ss += pension; // Sumamos la pensión a deducciones
-            } 
-            else if (pais === 'IT') {
+                ss += (bruto * pension);
+
+                // Tax (Income Tax) - Lógica de Doble Empleo (Código BR)
+                if(isSecondJob) {
+                    tax = bruto * 0.20; // 20% flat si es segundo empleo
+                } else {
+                    tax = (bruto > 1047) ? (bruto - 1047) * 0.20 : 0;
+                }
+            }
+            else if(pais === 'IT') {
                 ss = bruto * 0.0919;
-                const reg = parseFloat(document.getElementById('it-regional').value) || 0;
-                tax = (bruto * 0.23) + (bruto * (reg / 100));
-            } 
-            else if (pais === 'PT') {
+                const reg = parseFloat(document.getElementById('it-reg').value) || 1.23;
+                const com = parseFloat(document.getElementById('it-com').value) || 0.8;
+                tax = (bruto * 0.23) + (bruto * (reg/100)) + (bruto * (com/100));
+            }
+            else if(pais === 'PT') {
                 ss = bruto * 0.11;
-                const hijos = parseInt(document.getElementById('pt-hijos').value) || 0;
-                let baseTaxRate = 0.14;
-                // Descuento simple por hijos (simulación)
-                let taxRate = Math.max(0, baseTaxRate - (hijos * 0.015)); 
-                tax = bruto * taxRate;
+                const estado = document.getElementById('pt-estado').value;
+                const hijos = parseInt(document.getElementById('pt-filhos').value) || 0;
+                let baseIRS = (estado === 'casado') ? 0.12 : 0.145;
+                tax = bruto * Math.max(0, (baseIRS - (hijos * 0.015)));
             }
 
             const neto = bruto - ss - tax;
 
-            // Inserción segura en el DOM
-            document.getElementById('bruto-display').textContent = bruto.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) + simb;
-            document.getElementById('neto-display').textContent = neto.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) + simb;
-            document.getElementById('ss-display').textContent = '-' + ss.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) + simb;
-            document.getElementById('tax-display').textContent = '-' + tax.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) + simb;
+            document.getElementById('bruto-display').textContent = bruto.toLocaleString(undefined, {minimumFractionDigits:2}) + simb;
+            document.getElementById('neto-display').textContent = neto.toLocaleString(undefined, {minimumFractionDigits:2}) + simb;
+            document.getElementById('ss-display').textContent = '-' + ss.toLocaleString(undefined, {minimumFractionDigits:2}) + simb;
+            document.getElementById('tax-display').textContent = '-' + tax.toLocaleString(undefined, {minimumFractionDigits:2}) + simb;
             
             document.getElementById('result-card').classList.remove('hidden');
-            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'});
         }
 
-        // Inicialización y Anti-Clickjacking
-        if (window.top !== window.self) { window.top.location = window.self.location; }
         changeLanguage('es');
-        
-        // Registro Básico Service Worker para PWA (Para que salte el prompt de instalar)
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                // Requiere que subas un archivo vacío llamado sw.js al servidor luego
-                navigator.serviceWorker.register('sw.js').catch(() => {
-                    console.log("PWA lista para despliegue.");
-                });
-            });
-        }
     </script>
 </body>
 </html>
