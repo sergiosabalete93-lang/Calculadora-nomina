@@ -3,268 +3,396 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    
     <title>Payroll Pro - Global Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <style>
         .no-select { user-select: none; -webkit-user-select: none; }
-        .lang-btn.active { border-color: #3b82f6; color: #3b82f6; background: rgba(59, 130, 246, 0.1); }
+        .lang-btn.active { border-color: #3b82f6; color: #3b82f6; background: rgba(59, 130, 246, 0.15); }
         input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-        .loader { border: 4px solid rgba(255,255,255,0.1); border-left-color: #3b82f6; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        .loader { border: 4px solid rgba(255,255,255,0.1); border-left-color: #3b82f6; border-radius: 50%; width: 45px; height: 45px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        /* Evita que el fondo de los selectores nativos se vea mal en iOS/Android */
+        select { -webkit-appearance: none; -moz-appearance: none; appearance: none; }
     </style>
 </head>
-<body class="bg-slate-900 text-white min-h-screen no-select flex flex-col">
+<body class="bg-slate-900 text-white min-h-screen no-select flex flex-col font-sans">
 
-    <div id="ad-overlay" class="fixed inset-0 bg-slate-950/98 z-[1000] hidden flex-col justify-center items-center backdrop-blur-md">
+    <div id="ad-overlay" class="fixed inset-0 bg-slate-950/95 z-[1000] hidden flex-col justify-center items-center backdrop-blur-sm">
         <div class="loader mb-6"></div>
-        <h2 id="ad-msg" class="text-xs font-black text-blue-400 uppercase tracking-[0.3em]">Procesando Nómina</h2>
-        <div id="ad-timer" class="mt-4 text-4xl font-black">5</div>
-        <p class="text-[9px] text-slate-600 mt-8 uppercase tracking-widest">Espacio Publicitario</p>
+        <h2 data-i18n="ad_processing" class="text-xs font-black text-blue-400 uppercase tracking-[0.3em]">Procesando Cálculo</h2>
+        <div class="mt-6 bg-blue-600/20 px-8 py-3 rounded-full border border-blue-500/30">
+            <span id="ad-timer" class="text-3xl font-black text-blue-400">5</span>
+        </div>
+        <p data-i18n="ad_space" class="text-[9px] text-slate-500 mt-8 uppercase tracking-widest">Espacio Publicitario</p>
     </div>
 
-    <header class="p-4 bg-slate-800 border-b border-slate-700 sticky top-0 z-50 shadow-xl">
+    <header class="p-4 bg-slate-800 border-b border-slate-700 sticky top-0 z-50 shadow-md">
         <div class="max-w-lg mx-auto flex justify-between items-center">
-            <h1 class="text-xs font-black text-blue-400 uppercase tracking-tighter">Payroll Pro</h1>
-            <div class="flex gap-1">
-                <button onclick="changeLanguage('es')" id="lang-es" class="lang-btn text-[9px] font-bold border border-slate-700 px-2.5 py-1.5 rounded-lg active">ES</button>
-                <button onclick="changeLanguage('en')" id="lang-en" class="lang-btn text-[9px] font-bold border border-slate-700 px-2.5 py-1.5 rounded-lg">EN</button>
-                <button onclick="changeLanguage('it')" id="lang-it" class="lang-btn text-[9px] font-bold border border-slate-700 px-2.5 py-1.5 rounded-lg">IT</button>
-                <button onclick="changeLanguage('pt')" id="lang-pt" class="lang-btn text-[9px] font-bold border border-slate-700 px-2.5 py-1.5 rounded-lg">PT</button>
+            <h1 class="text-xs font-black text-blue-400 uppercase tracking-tighter"><i class="fa-solid fa-calculator mr-1"></i> Payroll Pro</h1>
+            <div class="flex gap-1.5" id="lang-controls">
+                <button onclick="setLanguage('es')" id="btn-lang-es" class="lang-btn text-[9px] font-bold border border-slate-700 px-2.5 py-1.5 rounded-lg transition-colors">ES</button>
+                <button onclick="setLanguage('en')" id="btn-lang-en" class="lang-btn text-[9px] font-bold border border-slate-700 px-2.5 py-1.5 rounded-lg transition-colors">EN</button>
+                <button onclick="setLanguage('it')" id="btn-lang-it" class="lang-btn text-[9px] font-bold border border-slate-700 px-2.5 py-1.5 rounded-lg transition-colors">IT</button>
+                <button onclick="setLanguage('pt')" id="btn-lang-pt" class="lang-btn text-[9px] font-bold border border-slate-700 px-2.5 py-1.5 rounded-lg transition-colors">PT</button>
             </div>
         </div>
     </header>
 
-    <main class="p-4 max-w-lg mx-auto w-full flex-grow">
+    <main class="p-4 max-w-lg mx-auto w-full flex-grow flex flex-col">
         <div class="flex bg-slate-800 p-1 rounded-2xl mb-6 border border-slate-700">
-            <button onclick="setModo('mes')" id="btn-mes" class="flex-1 py-3 rounded-xl bg-blue-600 font-bold text-[10px] uppercase transition-all">Mensual</button>
-            <button onclick="setModo('semana')" id="btn-semana" class="flex-1 py-3 rounded-xl font-bold text-slate-500 text-[10px] uppercase transition-all">Semanal</button>
-            <button onclick="setModo('horas')" id="btn-horas" class="flex-1 py-3 rounded-xl font-bold text-slate-500 text-[10px] uppercase transition-all">Horas</button>
+            <button onclick="setMode('mes')" id="mode-mes" data-i18n="mode_month" class="flex-1 py-3 rounded-xl bg-blue-600 font-bold text-[10px] uppercase transition-all">Mensual</button>
+            <button onclick="setMode('semana')" id="mode-semana" data-i18n="mode_week" class="flex-1 py-3 rounded-xl font-bold text-slate-500 text-[10px] uppercase transition-all hover:text-slate-300">Semanal</button>
+            <button onclick="setMode('horas')" id="mode-horas" data-i18n="mode_hour" class="flex-1 py-3 rounded-xl font-bold text-slate-500 text-[10px] uppercase transition-all hover:text-slate-300">Horas</button>
         </div>
 
         <div class="space-y-4">
-            <div class="bg-slate-800/50 p-4 rounded-2xl border border-slate-800 shadow-inner">
-                <label id="lbl-pais" class="text-[9px] font-black text-slate-500 uppercase block mb-2 tracking-widest">País Fiscal</label>
-                <select id="pais" onchange="actualizarPanelAvanzado()" class="w-full bg-transparent text-lg font-bold outline-none cursor-pointer">
+            <div class="bg-slate-800/60 p-4 rounded-2xl border border-slate-700 relative">
+                <label data-i18n="lbl_country" class="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-2">País Fiscal</label>
+                <select id="country-select" onchange="updateAdvancedVisibility()" class="w-full bg-transparent text-lg font-bold outline-none text-white cursor-pointer relative z-10">
                     <option value="ES">España 🇪🇸</option>
                     <option value="UK">United Kingdom 🇬🇧</option>
                     <option value="IT">Italia 🇮🇹</option>
                     <option value="PT">Portugal 🇵🇹</option>
                 </select>
+                <div class="absolute right-4 top-1/2 mt-1 text-slate-500 pointer-events-none"><i class="fa-solid fa-chevron-down"></i></div>
             </div>
 
             <div class="grid grid-cols-2 gap-4">
-                <div class="bg-slate-800/50 p-4 rounded-2xl border border-slate-800">
-                    <label id="lbl-bruto" class="text-[9px] font-black text-slate-500 uppercase block mb-1">Sueldo Bruto</label>
-                    <input type="number" id="input-bruto" class="w-full bg-transparent text-2xl font-black outline-none text-blue-400" placeholder="0.00">
+                <div class="bg-slate-800/60 p-4 rounded-2xl border border-slate-700">
+                    <label id="lbl-gross" data-i18n="lbl_gross" class="text-[9px] font-black text-slate-400 uppercase block mb-1">Sueldo Bruto</label>
+                    <input type="number" id="input-gross" class="w-full bg-transparent text-2xl font-black outline-none text-blue-400" placeholder="0.00">
                 </div>
-                <div class="bg-slate-800/50 p-4 rounded-2xl border border-slate-800">
-                    <label id="lbl-tiempo" class="text-[9px] font-black text-slate-500 uppercase block mb-1">Tiempo</label>
-                    <input type="number" id="input-tiempo" class="w-full bg-transparent text-2xl font-black outline-none" placeholder="30">
+                <div class="bg-slate-800/60 p-4 rounded-2xl border border-slate-700">
+                    <label id="lbl-time" data-i18n="lbl_time" class="text-[9px] font-black text-slate-400 uppercase block mb-1">Días</label>
+                    <input type="number" id="input-time" class="w-full bg-transparent text-2xl font-black outline-none text-white" placeholder="30">
                 </div>
             </div>
 
-            <button onclick="togglePanel()" class="w-full py-4 rounded-xl border border-slate-800 text-[9px] font-black text-slate-400 uppercase tracking-widest hover:bg-slate-800 transition-all">
-                <i class="fa-solid fa-sliders mr-2"></i> <span id="lbl-btn-avanzado">Opciones Avanzadas</span>
+            <button onclick="toggleAdvanced()" class="w-full py-4 rounded-xl border border-slate-700 bg-slate-800/30 text-[9px] font-black text-slate-400 uppercase tracking-widest hover:bg-slate-800 transition-colors">
+                <i class="fa-solid fa-sliders mr-2"></i> <span data-i18n="btn_adv">Opciones Avanzadas</span>
             </button>
 
-            <div id="panel-avanzado" class="hidden space-y-4 bg-slate-800/30 p-5 rounded-2xl border border-dashed border-slate-700">
+            <div id="advanced-container" class="hidden space-y-4 bg-slate-800/40 p-5 rounded-2xl border border-dashed border-slate-600">
                 
-                <div id="panel-es" class="country-panel hidden">
-                    <label id="lbl-es-irpf" class="text-[10px] font-bold text-blue-400 uppercase block mb-2">IRPF Manual (%)</label>
-                    <input type="number" id="val-es-irpf" class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl outline-none" placeholder="Auto">
+                <div id="adv-ES" class="adv-panel hidden">
+                    <label data-i18n="es_irpf" class="text-[10px] font-bold text-blue-400 uppercase block mb-2">Retención IRPF (%)</label>
+                    <input type="number" id="es-irpf-val" class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl outline-none text-sm font-bold placeholder-slate-600">
                 </div>
 
-                <div id="panel-uk" class="country-panel hidden space-y-4">
-                    <div class="flex justify-between items-center bg-slate-900/50 p-3 rounded-xl border border-slate-700">
-                        <label id="lbl-uk-2job" class="text-[10px] font-bold text-slate-300 uppercase">¿Segundo Empleo?</label>
-                        <input type="checkbox" id="val-uk-2job" class="w-5 h-5 accent-blue-500">
+                <div id="adv-UK" class="adv-panel hidden space-y-4">
+                    <div class="flex justify-between items-center bg-slate-900/60 p-3 rounded-xl border border-slate-700">
+                        <label data-i18n="uk_2job" class="text-[10px] font-bold text-slate-300 uppercase">¿Segundo Empleo?</label>
+                        <input type="checkbox" id="uk-2job-val" class="w-5 h-5 accent-blue-500 cursor-pointer">
                     </div>
                     <div>
-                        <label id="lbl-uk-pension" class="text-[10px] font-bold text-blue-400 uppercase block mb-2">Pensión (%)</label>
-                        <input type="number" id="val-uk-pension" class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl outline-none" placeholder="5">
-                    </div>
-                </div>
-
-                <div id="panel-it" class="country-panel hidden space-y-4">
-                    <div>
-                        <label id="lbl-it-reg" class="text-[10px] font-bold text-blue-400 uppercase block mb-2">Addizionale Regionale (%)</label>
-                        <input type="number" id="val-it-reg" class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl outline-none" placeholder="1.23">
-                    </div>
-                    <div>
-                        <label id="lbl-it-com" class="text-[10px] font-bold text-blue-400 uppercase block mb-2">Addizionale Comunale (%)</label>
-                        <input type="number" id="val-it-com" class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl outline-none" placeholder="0.8">
+                        <label data-i18n="uk_pension" class="text-[10px] font-bold text-blue-400 uppercase block mb-2">Aportación Pensión (%)</label>
+                        <input type="number" id="uk-pension-val" class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl outline-none text-sm font-bold placeholder-slate-600" placeholder="5">
                     </div>
                 </div>
 
-                <div id="panel-pt" class="country-panel hidden space-y-4">
+                <div id="adv-IT" class="adv-panel hidden space-y-4">
                     <div>
-                        <label id="lbl-pt-estado" class="text-[10px] font-bold text-blue-400 uppercase block mb-2">Estado Civil</label>
-                        <select id="val-pt-estado" class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl outline-none">
-                            <option value="solteiro" id="opt-pt-sol">Soltero</option>
-                            <option value="casado" id="opt-pt-cas">Casado</option>
+                        <label data-i18n="it_reg" class="text-[10px] font-bold text-blue-400 uppercase block mb-2">Addizionale Regionale (%)</label>
+                        <input type="number" id="it-reg-val" class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl outline-none text-sm font-bold placeholder-slate-600" placeholder="1.23">
+                    </div>
+                    <div>
+                        <label data-i18n="it_com" class="text-[10px] font-bold text-blue-400 uppercase block mb-2">Addizionale Comunale (%)</label>
+                        <input type="number" id="it-com-val" class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl outline-none text-sm font-bold placeholder-slate-600" placeholder="0.8">
+                    </div>
+                </div>
+
+                <div id="adv-PT" class="adv-panel hidden space-y-4">
+                    <div class="relative">
+                        <label data-i18n="pt_status" class="text-[10px] font-bold text-blue-400 uppercase block mb-2">Estado Civil</label>
+                        <select id="pt-status-val" class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl outline-none text-sm font-bold relative z-10 cursor-pointer">
+                            <option value="solteiro" data-i18n="pt_single">Soltero / No Casado</option>
+                            <option value="casado" data-i18n="pt_married">Casado</option>
                         </select>
+                        <div class="absolute right-3 top-9 text-slate-500 pointer-events-none"><i class="fa-solid fa-chevron-down text-xs"></i></div>
                     </div>
                     <div>
-                        <label id="lbl-pt-hijos" class="text-[10px] font-bold text-blue-400 uppercase block mb-2">Nº Hijos</label>
-                        <input type="number" id="val-pt-hijos" class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl outline-none" placeholder="0">
+                        <label data-i18n="pt_dep" class="text-[10px] font-bold text-blue-400 uppercase block mb-2">Número de Hijos (Dependientes)</label>
+                        <input type="number" id="pt-dep-val" class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl outline-none text-sm font-bold placeholder-slate-600" placeholder="0">
                     </div>
                 </div>
             </div>
 
-            <button onclick="flujoCalculo()" id="lbl-btn-calc" class="w-full bg-blue-600 hover:bg-blue-500 py-5 rounded-3xl text-lg font-black uppercase tracking-[0.2em] shadow-2xl transition-all active:scale-95">
+            <button onclick="triggerCalculation()" data-i18n="btn_calc" class="w-full bg-blue-600 hover:bg-blue-500 py-5 rounded-3xl text-lg font-black uppercase tracking-[0.2em] shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all active:scale-95">
                 Calcular Neto
             </button>
         </div>
 
-        <section id="res-card" class="hidden mt-8 animate-in fade-in zoom-in duration-300">
-            <div class="bg-gradient-to-br from-blue-700 to-indigo-950 rounded-[2.5rem] p-8 shadow-2xl border border-white/5">
-                <p id="lbl-res-tit" class="text-[9px] font-black text-blue-200 uppercase tracking-[0.4em] mb-2">Neto Estimado</p>
-                <h2 id="res-neto" class="text-6xl font-black text-white mb-8 tracking-tighter">0.00</h2>
+        <section id="results-card" class="hidden mt-8 mb-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div class="bg-gradient-to-br from-blue-800 to-indigo-950 rounded-[2.5rem] p-8 shadow-2xl border border-blue-500/20 relative overflow-hidden">
+                <div class="absolute -right-10 -top-10 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl"></div>
                 
-                <div class="space-y-4 text-xs font-bold border-t border-white/10 pt-6">
-                    <div class="flex justify-between text-white/50"><span id="lbl-res-bruto">Bruto:</span><span id="res-bruto-val">0.00</span></div>
-                    <div class="flex justify-between text-red-300"><span id="lbl-res-ss">Seg. Social:</span><span id="res-ss-val">-0.00</span></div>
-                    <div class="flex justify-between text-red-300"><span id="lbl-res-tax">Impuestos:</span><span id="res-tax-val">-0.00</span></div>
+                <p data-i18n="res_title" class="text-[9px] font-black text-blue-300 uppercase tracking-[0.4em] mb-2 relative z-10">Neto Estimado Final</p>
+                <h2 id="out-net" class="text-6xl font-black text-white mb-8 tracking-tighter relative z-10">0.00</h2>
+                
+                <div class="space-y-4 text-xs font-bold border-t border-white/10 pt-6 relative z-10">
+                    <div class="flex justify-between text-slate-300"><span data-i18n="res_gross">Bruto Total:</span><span id="out-gross">0.00</span></div>
+                    <div class="flex justify-between text-red-300"><span data-i18n="res_ss">Seguridad Social:</span><span id="out-ss">-0.00</span></div>
+                    <div class="flex justify-between text-red-300"><span data-i18n="res_tax">Impuestos:</span><span id="out-tax">-0.00</span></div>
                 </div>
             </div>
         </section>
+
+        <footer class="mt-auto pt-8 pb-4 text-center">
+            <p data-i18n="legal_disclaimer" class="text-[8px] text-slate-500 uppercase tracking-wider leading-relaxed">
+                ⚠️ Las cifras generadas son estimaciones. Esta aplicación no ofrece asesoramiento fiscal ni legal oficial. Consulte a un profesional para su caso específico.
+            </p>
+        </footer>
     </main>
 
     <script>
-        const i18n = {
+        "use strict";
+
+        // Diccionario de Traducciones Estricto
+        const translations = {
             es: {
-                pais: "País Fiscal", bruto: "Sueldo Bruto", tiempo: "Días / Tiempo", avanzado: "Opciones Avanzadas", calc: "Calcular Neto",
-                resTit: "Sueldo Neto Final", resBruto: "Sueldo Bruto:", resSS: "Seguridad Social:", resTax: "Impuestos:",
-                es_irpf: "IRPF Manual (%)", uk_2job: "¿Es Segundo Empleo?", uk_pen: "Pensión (%)", it_reg: "Add. Regionale (%)", it_com: "Add. Comunale (%)",
-                pt_est: "Estado Civil", pt_hijos: "Nº de Hijos", opt_sol: "Soltero / No Casado", opt_cas: "Casado", ad: "Procesando Nómina"
+                mode_month: "Mensual", mode_week: "Semanal", mode_hour: "Horas",
+                lbl_country: "País Fiscal", lbl_gross: "Sueldo Bruto", lbl_time: "Días / Tiempo",
+                btn_adv: "Opciones Avanzadas", btn_calc: "Calcular Neto",
+                es_irpf: "IRPF Manual (%)", uk_2job: "¿Segundo Empleo?", uk_pension: "Pensión (%)",
+                it_reg: "Addizionale Regionale (%)", it_com: "Addizionale Comunale (%)",
+                pt_status: "Estado Civil", pt_single: "Soltero / No Casado", pt_married: "Casado", pt_dep: "Nº de Hijos (Dependientes)",
+                res_title: "Neto Estimado Final", res_gross: "Sueldo Bruto:", res_ss: "Seguridad Social:", res_tax: "Impuestos (Retención):",
+                ad_processing: "Procesando Cálculo", ad_space: "Espacio Publicitario",
+                legal_disclaimer: "⚠️ Las cifras generadas son estimaciones. Esta aplicación no ofrece asesoramiento fiscal ni legal oficial. Consulte a un profesional para su caso específico."
             },
             en: {
-                pais: "Tax Country", bruto: "Gross Salary", tiempo: "Days / Hours", avanzado: "Advanced Settings", calc: "Calculate Net",
-                resTit: "Final Take-Home Pay", resBruto: "Gross Total:", resSS: "Social Security:", resTax: "Income Tax:",
-                es_irpf: "Manual Tax (%)", uk_2job: "Second Job?", uk_pen: "Pension (%)", it_reg: "Regional Tax (%)", it_com: "City Tax (%)",
-                pt_est: "Marital Status", pt_hijos: "Dependents", opt_sol: "Single", opt_cas: "Married", ad: "Processing Payroll"
+                mode_month: "Monthly", mode_week: "Weekly", mode_hour: "Hourly",
+                lbl_country: "Tax Residency", lbl_gross: "Gross Salary", lbl_time: "Days / Hours",
+                btn_adv: "Advanced Settings", btn_calc: "Calculate Net Pay",
+                es_irpf: "Manual Tax (%)", uk_2job: "Is this a Second Job?", uk_pension: "Pension Contribution (%)",
+                it_reg: "Regional Tax (%)", it_com: "Municipal Tax (%)",
+                pt_status: "Marital Status", pt_single: "Single", pt_married: "Married", pt_dep: "Number of Dependents",
+                res_title: "Estimated Take-Home Pay", res_gross: "Gross Total:", res_ss: "National Insurance / SS:", res_tax: "Income Tax:",
+                ad_processing: "Processing Calculation", ad_space: "Advertisement Space",
+                legal_disclaimer: "⚠️ Figures generated are estimates only. This application does not provide official tax or legal advice. Consult a professional."
             },
             it: {
-                pais: "Paese Fiscale", bruto: "Lordo Totale", tiempo: "Giorni / Ore", avanzado: "Opzioni Avanzate", calc: "Calcola Netto",
-                resTit: "Stipendio Netto", resBruto: "Lordo Totale:", resSS: "Contributi:", resTax: "Tasse (IRPEF):",
-                es_irpf: "IRPF Manuale (%)", uk_2job: "Secondo Lavoro?", uk_pen: "Pensione (%)", it_reg: "Add. Regionale (%)", it_com: "Add. Comunale (%)",
-                pt_est: "Stato Civile", pt_hijos: "Figli a Carico", opt_sol: "Celibe / Nubile", opt_cas: "Coniugato", ad: "Elaborazione..."
+                mode_month: "Mensile", mode_week: "Settimanale", mode_hour: "Orario",
+                lbl_country: "Paese Fiscale", lbl_gross: "Stipendio Lordo", lbl_time: "Giorni / Ore",
+                btn_adv: "Opzioni Avanzate", btn_calc: "Calcola Netto",
+                es_irpf: "IRPEF Manuale (%)", uk_2job: "Secondo Lavoro?", uk_pension: "Pensione (%)",
+                it_reg: "Addizionale Regionale (%)", it_com: "Addizionale Comunale (%)",
+                pt_status: "Stato Civile", pt_single: "Celibe / Nubile", pt_married: "Coniugato/a", pt_dep: "Figli a Carico",
+                res_title: "Stipendio Netto Stimato", res_gross: "Lordo Totale:", res_ss: "Contributi INPS:", res_tax: "Trattenute IRPEF:",
+                ad_processing: "Elaborazione in corso", ad_space: "Spazio Pubblicitario",
+                legal_disclaimer: "⚠️ Le cifre generate sono stime. Questa applicazione non fornisce consulenza fiscale o legale ufficiale. Consultare un professionista."
             },
             pt: {
-                pais: "País Fiscal", bruto: "Vencimento Bruto", tiempo: "Dias / Horas", avanzado: "Opções Avançadas", calc: "Calcular Líquido",
-                resTit: "Salário Líquido", resBruto: "Bruto Total:", resSS: "Seg. Social:", resTax: "Retenção IRS:",
-                es_irpf: "IRS Manual (%)", uk_2job: "2º Emprego?", uk_pen: "Pensão (%)", it_reg: "Taxa Regional (%)", it_com: "Taxa Municipal (%)",
-                pt_est: "Estado Civil", pt_hijos: "Dependentes", opt_sol: "Solteiro", opt_cas: "Casado", ad: "A Processar..."
+                mode_month: "Mensal", mode_week: "Semanal", mode_hour: "Por Hora",
+                lbl_country: "País Fiscal", lbl_gross: "Vencimento Bruto", lbl_time: "Dias / Horas",
+                btn_adv: "Opções Avançadas", btn_calc: "Calcular Salário Líquido",
+                es_irpf: "Retenção Manual (%)", uk_2job: "2º Emprego?", uk_pension: "Pensão (%)",
+                it_reg: "Taxa Regional (%)", it_com: "Taxa Municipal (%)",
+                pt_status: "Estado Civil", pt_single: "Solteiro(a)", pt_married: "Casado(a)", pt_dep: "Número de Dependentes",
+                res_title: "Salário Líquido Estimado", res_gross: "Bruto Total:", res_ss: "Segurança Social:", res_tax: "Retenção IRS:",
+                ad_processing: "A Processar Cálculo", ad_space: "Espaço Publicitário",
+                legal_disclaimer: "⚠️ Os valores gerados são estimativas. Esta aplicação não oferece aconselhamento fiscal ou legal oficial. Consulte um profissional."
             }
         };
 
-        let lang = 'es';
-        let modo = 'mes';
-        let contador = 0;
+        // Estado Global
+        let currentLang = 'es';
+        let currentMode = 'mes';
+        let calculationCount = 0;
 
-        function changeLanguage(l) {
-            lang = l;
-            const t = i18n[l];
-            document.getElementById('lbl-pais').textContent = t.pais;
-            document.getElementById('lbl-bruto').textContent = (modo==='horas') ? (l==='en'?'Rate/Hour':'Precio/Hora') : t.bruto;
-            document.getElementById('lbl-tiempo').textContent = t.tiempo;
-            document.getElementById('lbl-btn-avanzado').textContent = t.avanzado;
-            document.getElementById('lbl-btn-calc').textContent = t.calc;
-            document.getElementById('lbl-res-tit').textContent = t.resTit;
-            document.getElementById('lbl-res-bruto').textContent = t.resBruto;
-            document.getElementById('lbl-res-ss').textContent = t.resSS;
-            document.getElementById('lbl-res-tax').textContent = t.resTax;
-            document.getElementById('ad-msg').textContent = t.ad;
-            // Avanzados
-            document.getElementById('lbl-es-irpf').textContent = t.es_irpf;
-            document.getElementById('lbl-uk-2job').textContent = t.uk_2job;
-            document.getElementById('lbl-uk-pension').textContent = t.uk_pen;
-            document.getElementById('lbl-it-reg').textContent = t.it_reg;
-            document.getElementById('lbl-it-com').textContent = t.it_com;
-            document.getElementById('lbl-pt-estado').textContent = t.pt_est;
-            document.getElementById('lbl-pt-hijos').textContent = t.pt_hijos;
-            document.getElementById('opt-pt-sol').textContent = t.opt_sol;
-            document.getElementById('opt-pt-cas').textContent = t.opt_cas;
+        // 1. Motor de Traducción
+        function setLanguage(lang) {
+            currentLang = lang;
+            const dict = translations[lang];
 
-            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('lang-'+l).classList.add('active');
-        }
-
-        function setModo(m) {
-            modo = m;
-            ['mes','semana','horas'].forEach(x => {
-                document.getElementById('btn-'+x).className = (x===m)?'flex-1 py-3 rounded-xl bg-blue-600 font-bold text-[10px] uppercase transition-all':'flex-1 py-3 rounded-xl font-bold text-slate-500 text-[10px] uppercase transition-all';
+            // Traducir todos los elementos con atributo data-i18n
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (dict[key]) {
+                    element.textContent = dict[key];
+                }
             });
-            changeLanguage(lang);
+
+            // Ajustar estilos de los botones de idioma
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-blue-600/10');
+            });
+            document.getElementById(`btn-lang-${lang}`).classList.add('active');
+
+            // Actualizar placeholders dinámicos de inputs principales según el modo
+            updateDynamicLabels();
         }
 
-        function togglePanel() {
-            document.getElementById('panel-avanzado').classList.toggle('hidden');
-            actualizarPanelAvanzado();
-        }
-
-        function actualizarPanelAvanzado() {
-            const p = document.getElementById('pais').value.toLowerCase();
-            document.querySelectorAll('.country-panel').forEach(panel => panel.classList.add('hidden'));
-            document.getElementById('panel-'+p).classList.remove('hidden');
-        }
-
-        function flujoCalculo() {
-            contador++;
-            if (contador === 1 || contador % 2 !== 0) {
-                const overlay = document.getElementById('ad-overlay');
-                overlay.classList.remove('hidden'); overlay.classList.add('flex');
-                let seg = 5; document.getElementById('ad-timer').textContent = seg;
-                const int = setInterval(() => {
-                    seg--; document.getElementById('ad-timer').textContent = seg;
-                    if(seg <= 0) { clearInterval(int); overlay.classList.add('hidden'); overlay.classList.remove('flex'); calcular(); }
-                }, 1000);
-            } else { calcular(); }
-        }
-
-        function calcular() {
-            const p = document.getElementById('pais').value;
-            const bBase = parseFloat(document.getElementById('input-bruto').value) || 0;
-            const t = parseFloat(document.getElementById('input-tiempo').value) || 0;
-            const simb = (p==='UK') ? '£' : '€';
+        // 2. Controlador de Modos (Mes/Semana/Horas)
+        function setMode(mode) {
+            currentMode = mode;
+            const modes = ['mes', 'semana', 'horas'];
             
-            let bruto = (modo === 'horas') ? bBase * t : bBase;
-            let ss = 0, tax = 0;
+            modes.forEach(m => {
+                const btn = document.getElementById(`mode-${m}`);
+                if (m === mode) {
+                    btn.className = "flex-1 py-3 rounded-xl bg-blue-600 font-bold text-[10px] uppercase transition-all";
+                } else {
+                    btn.className = "flex-1 py-3 rounded-xl font-bold text-slate-500 text-[10px] uppercase transition-all hover:text-slate-300";
+                }
+            });
+            updateDynamicLabels();
+        }
 
-            if(p==='ES') {
-                ss = bruto * 0.0647;
-                const man = parseFloat(document.getElementById('val-es-irpf').value);
-                tax = !isNaN(man) ? bruto * (man/100) : (bruto > 2500 ? bruto * 0.20 : bruto * 0.15);
-            } else if(p==='UK') {
-                const pen = (parseFloat(document.getElementById('val-uk-pension').value) || 5) / 100;
-                ss = (bruto > 1048) ? (bruto - 1048) * 0.08 : 0;
-                ss += (bruto * pen);
-                tax = document.getElementById('val-uk-2job').checked ? bruto * 0.20 : (bruto > 1047 ? (bruto-1047)*0.20 : 0);
-            } else if(p==='IT') {
-                ss = bruto * 0.0919;
-                const reg = parseFloat(document.getElementById('val-it-reg').value) || 1.23;
-                const com = parseFloat(document.getElementById('val-it-com').value) || 0.8;
-                tax = (bruto * 0.23) + (bruto * (reg/100)) + (bruto * (com/100));
-            } else if(p==='PT') {
-                ss = bruto * 0.11;
-                const est = document.getElementById('val-pt-estado').value;
-                const hijos = parseInt(document.getElementById('val-pt-hijos').value) || 0;
-                let rate = (est === 'casado') ? 0.12 : 0.145;
-                tax = bruto * Math.max(0, (rate - (hijos * 0.015)));
+        function updateDynamicLabels() {
+            const lblGross = document.getElementById('lbl-gross');
+            const lblTime = document.getElementById('lbl-time');
+            
+            if (currentMode === 'horas') {
+                lblGross.textContent = (currentLang === 'en') ? "Hourly Rate" : (currentLang === 'it') ? "Tariffa Oraria" : (currentLang === 'pt') ? "Valor Hora" : "Precio / Hora";
+                lblTime.textContent = (currentLang === 'en') ? "Total Hours" : (currentLang === 'it') ? "Ore Totali" : (currentLang === 'pt') ? "Total de Horas" : "Total de Horas";
+            } else {
+                lblGross.textContent = translations[currentLang]['lbl_gross'];
+                lblTime.textContent = translations[currentLang]['lbl_time'];
+            }
+        }
+
+        // 3. Lógica de Pestañas Avanzadas (Independiente del idioma)
+        function toggleAdvanced() {
+            const container = document.getElementById('advanced-container');
+            container.classList.toggle('hidden');
+            if (!container.classList.contains('hidden')) {
+                updateAdvancedVisibility();
+            }
+        }
+
+        function updateAdvancedVisibility() {
+            const country = document.getElementById('country-select').value;
+            // Ocultar todos los subpaneles
+            document.querySelectorAll('.adv-panel').forEach(panel => {
+                panel.classList.add('hidden');
+            });
+            // Mostrar solo el del país seleccionado
+            const activePanel = document.getElementById(`adv-${country}`);
+            if (activePanel) {
+                activePanel.classList.remove('hidden');
+            }
+        }
+
+        // 4. Controlador de Cálculos y Publicidad
+        function triggerCalculation() {
+            calculationCount++;
+            
+            // Lógica: Mostrar anuncio en el 1er cálculo y luego en los impares (1, 3, 5...)
+            if (calculationCount === 1 || calculationCount % 2 !== 0) {
+                showAdAndCalculate();
+            } else {
+                executeMath();
+            }
+        }
+
+        function showAdAndCalculate() {
+            const overlay = document.getElementById('ad-overlay');
+            const timerEl = document.getElementById('ad-timer');
+            let timeLeft = 5;
+            
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex');
+            timerEl.textContent = timeLeft;
+
+            const countdown = setInterval(() => {
+                timeLeft--;
+                timerEl.textContent = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(countdown);
+                    overlay.classList.add('hidden');
+                    overlay.classList.remove('flex');
+                    executeMath();
+                }
+            }, 1000);
+        }
+
+        // 5. Motor Matemático Central
+        function executeMath() {
+            const country = document.getElementById('country-select').value;
+            const inputBase = Math.abs(parseFloat(document.getElementById('input-gross').value)) || 0;
+            const inputTime = Math.abs(parseFloat(document.getElementById('input-time').value)) || 0;
+            const currency = (country === 'UK') ? '£' : '€';
+
+            // Determinar bruto total
+            let grossTotal = (currentMode === 'horas') ? (inputBase * inputTime) : inputBase;
+            let ssAmount = 0;
+            let taxAmount = 0;
+
+            // Fórmulas por país
+            if (country === 'ES') {
+                ssAmount = grossTotal * 0.0647;
+                const manualTax = parseFloat(document.getElementById('es-irpf-val').value);
+                if (!isNaN(manualTax)) {
+                    taxAmount = grossTotal * (manualTax / 100);
+                } else {
+                    taxAmount = (grossTotal > 2500) ? grossTotal * 0.19 : grossTotal * 0.15;
+                }
+            } 
+            else if (country === 'UK') {
+                const isSecondJob = document.getElementById('uk-2job-val').checked;
+                const pensionRate = (parseFloat(document.getElementById('uk-pension-val').value) || 5) / 100;
+                
+                // National Insurance (Approximate logic)
+                ssAmount = (grossTotal > 1048) ? (grossTotal - 1048) * 0.08 : 0;
+                ssAmount += (grossTotal * pensionRate); // Summing pension to deductions
+
+                // Income Tax (BR code for 2nd job is flat 20%)
+                if (isSecondJob) {
+                    taxAmount = grossTotal * 0.20;
+                } else {
+                    taxAmount = (grossTotal > 1047) ? (grossTotal - 1047) * 0.20 : 0;
+                }
+            } 
+            else if (country === 'IT') {
+                ssAmount = grossTotal * 0.0919;
+                const regRate = parseFloat(document.getElementById('it-reg-val').value) || 1.23;
+                const comRate = parseFloat(document.getElementById('it-com-val').value) || 0.8;
+                // Base IRPEF (23%) + Regional + Comunale
+                taxAmount = (grossTotal * 0.23) + (grossTotal * (regRate / 100)) + (grossTotal * (comRate / 100));
+            } 
+            else if (country === 'PT') {
+                ssAmount = grossTotal * 0.11;
+                const maritalStatus = document.getElementById('pt-status-val').value;
+                const dependents = parseInt(document.getElementById('pt-dep-val').value) || 0;
+                
+                // IRS simplificado basado en estado civil y dependientes
+                let baseIrsRate = (maritalStatus === 'casado') ? 0.12 : 0.145;
+                let finalIrsRate = Math.max(0, baseIrsRate - (dependents * 0.015));
+                taxAmount = grossTotal * finalIrsRate;
             }
 
-            document.getElementById('res-bruto-val').textContent = bruto.toLocaleString(undefined, {minimumFractionDigits:2}) + simb;
-            document.getElementById('res-ss-val').textContent = "-" + ss.toLocaleString(undefined, {minimumFractionDigits:2}) + simb;
-            document.getElementById('res-tax-val').textContent = "-" + tax.toLocaleString(undefined, {minimumFractionDigits:2}) + simb;
-            document.getElementById('res-neto').textContent = (bruto-ss-tax).toLocaleString(undefined, {minimumFractionDigits:2}) + simb;
-            
-            document.getElementById('res-card').classList.remove('hidden');
-            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            const netTotal = grossTotal - ssAmount - taxAmount;
+
+            // Renderizar Resultados
+            document.getElementById('out-gross').textContent = grossTotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + currency;
+            document.getElementById('out-ss').textContent = "-" + ssAmount.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + currency;
+            document.getElementById('out-tax').textContent = "-" + taxAmount.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + currency;
+            document.getElementById('out-net').textContent = netTotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + currency;
+
+            // Mostrar Tarjeta y hacer scroll
+            const resCard = document.getElementById('results-card');
+            resCard.classList.remove('hidden');
+            setTimeout(() => {
+                resCard.scrollIntoView({ behavior: 'smooth', block: 'end' });
+            }, 100);
         }
 
-        // Inicio
-        changeLanguage('es');
+        // Inicialización al cargar la página
+        window.addEventListener('DOMContentLoaded', () => {
+            setLanguage('es');
+            // Asegurarse de que el país por defecto es España para que coincida con el HTML
+            document.getElementById('country-select').value = 'ES';
+            // Configurar placeholder para el IRPF español a su estado inicial
+            document.getElementById('es-irpf-val').placeholder = "Auto (15-19%)";
+        });
     </script>
 </body>
 </html>
