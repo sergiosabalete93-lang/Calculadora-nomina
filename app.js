@@ -1,4 +1,4 @@
-// app.js - Motor Completo V2
+// app.js - Motor Completo Corregido
 
 document.addEventListener('DOMContentLoaded', () => {
     // 1. ESTADO GLOBAL
@@ -6,31 +6,29 @@ document.addEventListener('DOMContentLoaded', () => {
         isPro: false,
         country: 'es',
         lang: 'es',
-        mode: 'normal', // normal, inverse, despido
+        mode: 'normal',
         theme: localStorage.getItem('theme') || 'light'
     };
 
-    // Aplicar tema guardado
     document.body.setAttribute('data-theme', state.theme);
 
-    // 2. DICCIONARIO DE TRADUCCIONES
+    // 2. DICCIONARIO DE TRADUCCIONES CORREGIDO (Incluye Resultados)
     const i18n = {
         es: { 
-            symES: '€', symUK: '£', symIT: '€', symPT: '€',
-            sal: 'Salario Bruto', net: 'Neto Mensual', tax: 'Deducciones',
-            btnCalc: 'CALCULAR RESULTADOS', settings: 'Ajustes Generales'
+            sal: 'Salario Bruto', btnCalc: 'CALCULAR RESULTADOS', settings: 'Ajustes Generales',
+            adv: '⚙️ Configuración Avanzada', resGross: 'Bruto Anual:', resNet: 'Neto Mensual:', resTax: 'Deducciones:'
         },
         en: { 
-            sal: 'Gross Salary', net: 'Monthly Net', tax: 'Deductions',
-            btnCalc: 'CALCULATE RESULTS', settings: 'General Settings'
+            sal: 'Gross Salary', btnCalc: 'CALCULATE RESULTS', settings: 'General Settings',
+            adv: '⚙️ Advanced Settings', resGross: 'Annual Gross:', resNet: 'Monthly Net:', resTax: 'Total Deductions:'
         },
         it: { 
-            sal: 'Stipendio Lordo', net: 'Netto Mensile', tax: 'Trattenute',
-            btnCalc: 'CALCOLA RISULTATI', settings: 'Impostazioni'
+            sal: 'Stipendio Lordo', btnCalc: 'CALCOLA RISULTATI', settings: 'Impostazioni',
+            adv: '⚙️ Impostazioni Avanzate', resGross: 'Lordo Annuo:', resNet: 'Netto Mensile:', resTax: 'Trattenute:'
         },
         pt: { 
-            sal: 'Vencimento Bruto', net: 'Líquido Mensal', tax: 'Retenções',
-            btnCalc: 'CALCULAR RESULTADOS', settings: 'Definições'
+            sal: 'Vencimento Bruto', btnCalc: 'CALCULAR RESULTADOS', settings: 'Definições',
+            adv: '⚙️ Definições Avançadas', resGross: 'Bruto Anual:', resNet: 'Líquido Mensal:', resTax: 'Retenções:'
         }
     };
 
@@ -51,6 +49,14 @@ document.addEventListener('DOMContentLoaded', () => {
         resGross: document.getElementById('res-gross'),
         resNet: document.getElementById('res-net'),
         resTax: document.getElementById('res-tax'),
+        
+        // Referencias para traducción
+        lblAdv: document.getElementById('lbl-adv-config'),
+        lblResGross: document.getElementById('lbl-res-gross'),
+        lblResNet: document.getElementById('lbl-res-net'),
+        lblResTax: document.getElementById('lbl-res-tax'),
+        lblSettings: document.getElementById('lbl-settings'),
+        
         modeBtns: document.querySelectorAll('.mode-btn'),
         btnUpgrade: document.getElementById('btn-upgrade'),
         btnRestore: document.getElementById('btn-restore')
@@ -81,7 +87,6 @@ document.addEventListener('DOMContentLoaded', () => {
             DOM.modeBtns.forEach(b => b.classList.remove('active'));
             e.target.classList.add('active');
             state.mode = e.target.dataset.mode;
-            // Cambiar placeholder según modo
             DOM.lblSal.innerText = state.mode === 'inverse' ? 'Objetivo Neto Mínimo' : i18n[state.lang].sal;
         });
     });
@@ -133,35 +138,38 @@ document.addEventListener('DOMContentLoaded', () => {
     // 6. ACTUALIZAR IDIOMA Y MONEDA
     function updateLanguage() {
         const langData = i18n[state.lang];
+        
+        // Textos
         DOM.lblSal.innerText = state.mode === 'inverse' ? 'Objetivo Neto' : langData.sal;
         DOM.calcBtn.innerText = langData.btnCalc;
-        document.getElementById('lbl-settings').innerText = langData.settings;
+        DOM.lblSettings.innerText = langData.settings;
+        DOM.lblAdv.innerText = langData.adv;
+        DOM.lblResGross.innerText = langData.resGross;
+        DOM.lblResNet.innerText = langData.resNet;
+        DOM.lblResTax.innerText = langData.resTax;
         
-        // Asignar símbolo correcto según país seleccionado
+        // Símbolo Moneda
         let symMap = { es: '€', it: '€', pt: '€', uk: '£' };
         DOM.currency.innerText = symMap[state.country];
     }
 
     // 7. MOTOR DE CÁLCULO Y ADMOB
     DOM.calcBtn.addEventListener('click', () => {
-        // 1. Mostrar Anuncio Intersticial (Simulación AdMob Web/App)
+        // Disparador AdMob Intersticial
         if (!state.isPro) {
             console.log("AdMob: Solicitando Intersticial ID: ca-app-pub-5962342027737970/3998701433");
-            // Aquí en la app real el SDK de AdMob intercepta y muestra el anuncio a pantalla completa.
         }
 
-        // 2. Ejecutar Cálculo
         const inputVal = parseFloat(DOM.salaryInput.value) || 0;
         const period = DOM.periodSel.value;
         
-        // Normalizar todo a Anual primero
+        // Normalizar a Anual
         let grossAnnual = inputVal;
         if (period === 'monthly') grossAnnual = inputVal * 12;
-        if (period === 'hourly') grossAnnual = inputVal * 40 * 52; // Aproximación 40h/semana
+        if (period === 'hourly') grossAnnual = inputVal * 40 * 52; 
 
         if(state.mode === 'inverse') {
-            // Lógica inversa simple (Aprox)
-            grossAnnual = grossAnnual * 1.35; 
+            grossAnnual = grossAnnual * 1.35; // Aprox bruto necesario
         } else if (state.mode === 'despido') {
             alert("Modo Despido Activo: Requiere introducir fechas (Función PRO en desarrollo visual)");
             return;
@@ -179,7 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let manualIrpf = document.getElementById('es-irpf') ? parseFloat(document.getElementById('es-irpf').value) : null;
             
             ss = gross * 0.0635;
-            tax = manualIrpf ? (gross * (manualIrpf/100)) : (gross * 0.19); // Base 19% si no se pone
+            tax = manualIrpf ? (gross * (manualIrpf/100)) : (gross * 0.19);
             net = gross - tax - ss;
         } else if(country === 'uk') {
             let pa = 12570;
@@ -190,7 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (country === 'pt') {
             months = 14;
             ss = gross * 0.11;
-            tax = gross * 0.14; // Aprox IRS
+            tax = gross * 0.14; 
             net = gross - tax - ss;
         } else if (country === 'it') {
             months = 13;
@@ -211,7 +219,6 @@ document.addEventListener('DOMContentLoaded', () => {
         DOM.resNet.innerText = `${netMonth.toFixed(2)} ${sym}`;
         DOM.resTax.innerText = `${totalDeductions.toFixed(2)} ${sym}`;
 
-        // Gráfico PRO
         if(state.isPro && r.gross > 0) {
             const total = r.net + r.tax + r.ss;
             const netPct = (r.net / total) * 100;
@@ -228,18 +235,18 @@ document.addEventListener('DOMContentLoaded', () => {
     function unlockPro() {
         state.isPro = true;
         document.querySelectorAll('.locked').forEach(el => el.classList.remove('locked'));
-        document.getElementById('ad-banner-container').style.display = 'none'; // Quita banner
-        DOM.btnUpgrade.style.display = 'none'; // Oculta botón comprar
+        document.getElementById('ad-banner-container').style.display = 'none'; 
+        DOM.btnUpgrade.style.display = 'none'; 
         alert("¡Versión PRO Desbloqueada! Anuncios eliminados y funciones activadas.");
     }
 
     DOM.btnUpgrade.addEventListener('click', unlockPro);
-    DOM.btnRestore.addEventListener('click', unlockPro); // Simulación de restauración
+    DOM.btnRestore.addEventListener('click', unlockPro);
 
-    // PWA Service Worker
+    // Init SW
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
 
-    // Init
+    // Arranque
     renderAdvancedOptions();
     updateLanguage();
 });
