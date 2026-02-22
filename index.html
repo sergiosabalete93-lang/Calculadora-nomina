@@ -3,17 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link rel="manifest" href="./manifest.json">
+    
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0f172a">
+
     <title>Payroll Pro - Global Edition</title>
+
+    <link rel="manifest" href="./manifest.json">
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('./worker.js').catch(() => {});
+          navigator.serviceWorker.register('./worker.js')
+            .then(reg => console.log('Listo'))
+            .catch(err => console.error(err));
         });
       }
     </script>
 </head>
+
 
 <body class="bg-gray-50 text-slate-900 dark:bg-slate-900 dark:text-white min-h-screen no-select flex flex-col font-sans">
 
