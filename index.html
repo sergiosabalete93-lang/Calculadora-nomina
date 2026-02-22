@@ -10,18 +10,21 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
+    <link rel="stylesheet" href="./styles.css">
+
     <link rel="manifest" href="./manifest.json">
     
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('./worker.js')
-            .then(() => console.log("Service Worker registrado con éxito"))
-            .catch(err => console.log("Error al registrar el worker:", err));
+            .then(() => console.log("Service Worker registrado"))
+            .catch(err => console.log("Error:", err));
         });
       }
     </script>
 </head>
+
 <body class="bg-gray-50 text-slate-900 dark:bg-slate-900 dark:text-white min-h-screen no-select flex flex-col font-sans">
 
     <div id="ad-overlay" class="fixed inset-0 bg-white/95 dark:bg-slate-950/95 z-[1000] hidden flex-col justify-center items-center backdrop-blur-sm">
