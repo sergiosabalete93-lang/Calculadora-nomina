@@ -1,208 +1,129 @@
-// app.js
+/* app.js - Motor Maestro Corregido */
 
-// --- 1. ESTADO GLOBAL ---
-let isPro = false; // Cambia a true al comprar la versión PRO
-let currentCountry = 'es';
-let extrasList = [];
-
-// --- 2. CONFIGURACIÓN DE IDIOMAS Y MONEDAS ---
-const dict = {
-    es: { sym: '€', sal: 'Sueldo Bruto Anual', net: 'Sueldo Neto Mensual', tax: 'Deducciones (IRPF + SS)' },
-    uk: { sym: '£', sal: 'Gross Annual Salary', net: 'Monthly Take Home', tax: 'Total Deductions (Tax + NI)' },
-    it: { sym: '€', sal: 'Stipendio Lordo Annuo', net: 'Stipendio Netto Mensile', tax: 'Trattenute (IRPEF + INPS)' },
-    pt: { sym: '€', sal: 'Vencimento Bruto Anual', net: 'Vencimento Líquido', tax: 'Retenções (IRS + SS)' }
-};
-
-// --- 3. REFERENCIAS AL DOM ---
-const salaryInput = document.getElementById('main-salary');
-const countrySelect = document.getElementById('country-selector');
-const currencySymbol = document.getElementById('currency-symbol');
-const labelSalary = document.getElementById('label-salary');
-const labelNet = document.getElementById('label-net-monthly');
-const labelTax = document.getElementById('label-total-tax');
-const textNetVal = document.getElementById('net-monthly');
-const textTaxVal = document.getElementById('total-tax');
-const specificOptions = document.getElementById('specific-options');
-const privacyBtn = document.getElementById('btn-privacy');
-const privacyContent = document.getElementById('privacy-content');
-
-// Inicializar Service Worker para Modo Offline
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW falló:', err));
-}
-
-// --- 4. EVENTOS PRINCIPALES ---
-salaryInput.addEventListener('input', calculate);
-countrySelect.addEventListener('change', () => {
-    currentCountry = countrySelect.value;
-    updateUIForCountry();
-    calculate();
-});
-
-privacyBtn.addEventListener('click', () => {
-    privacyContent.classList.toggle('hidden');
-});
-
-// --- 5. ACTUALIZAR INTERFAZ POR PAÍS ---
-function updateUIForCountry() {
-    const lang = dict[currentCountry];
-    currencySymbol.innerText = lang.sym;
-    labelSalary.innerText = lang.sal;
-    labelNet.innerText = lang.net;
-    labelTax.innerText = lang.tax;
+// Esperamos a que el DOM esté listo para evitar errores de carga
+document.addEventListener('DOMContentLoaded', () => {
     
-    // Inyectar opciones específicas del país
-    specificOptions.innerHTML = ''; 
-    if(currentCountry === 'es' || currentCountry === 'it') {
-        specificOptions.innerHTML = `
-            <div class="input-group" style="margin-top:10px;">
-                <label>Número de Pagas</label>
-                <select id="pagas-select" onchange="calculate()">
-                    <option value="12">12 Pagas</option>
-                    <option value="14">14 Pagas</option>
-                </select>
-            </div>
-        `;
-    }
-}
+    // 1. CONFIGURACIÓN INICIAL
+    let isPro = false; 
+    let currentCountry = 'es';
+    let extrasList = [];
 
-// --- 6. MOTOR DE CÁLCULO PRINCIPAL ---
-function calculate() {
-    let grossYearly = parseFloat(salaryInput.value) || 0;
-    
-    // Sumar/Restar Extras si es PRO
-    if (isPro) {
-        extrasList.forEach(extra => {
-            grossYearly += parseFloat(extra.value) || 0;
-        });
-    }
+    const dict = {
+        es: { sym: '€', sal: 'Sueldo Bruto Anual', net: 'Neto Mensual', tax: 'Deducciones', center: 'Neto' },
+        uk: { sym: '£', sal: 'Gross Annual Salary', net: 'Monthly Take Home', tax: 'Deductions', center: 'Net' },
+        it: { sym: '€', sal: 'Stipendio Lordo', net: 'Netto Mensile', tax: 'Trattenute', center: 'Netto' },
+        pt: { sym: '€', sal: 'Vencimento Bruto', net: 'Líquido Mensal', tax: 'Retenções', center: 'Líquido' }
+    };
 
-    let results = { netYearly: 0, taxYearly: 0, ssYearly: 0, months: 12 };
+    // 2. REFERENCIAS SEGURAS (DOM)
+    const elements = {
+        salary: document.getElementById('main-salary'),
+        country: document.getElementById('country-selector'),
+        currency: document.getElementById('currency-symbol'),
+        labelSal: document.getElementById('label-salary'),
+        labelNet: document.getElementById('label-net-monthly'),
+        labelTax: document.getElementById('label-total-tax'),
+        displayNet: document.getElementById('net-monthly'),
+        displayTax: document.getElementById('total-tax'),
+        centerLabel: document.getElementById('chart-center-label'),
+        centerVal: document.getElementById('chart-center-val'),
+        privacyBtn: document.getElementById('btn-privacy'),
+        privacyDiv: document.getElementById('privacy-content'),
+        specifics: document.getElementById('specific-options')
+    };
 
-    if (grossYearly > 0) {
-        switch (currentCountry) {
-            case 'es': results = calcES(grossYearly); break;
-            case 'uk': results = calcUK(grossYearly); break;
-            case 'it': results = calcIT(grossYearly); break;
-            case 'pt': results = calcPT(grossYearly); break;
+    // 3. ACTUALIZACIÓN DE IDIOMAS Y LEYES
+    function updateCountryUI() {
+        const lang = dict[currentCountry];
+        elements.currency.innerText = lang.sym;
+        elements.labelSal.innerText = lang.sal;
+        elements.labelNet.innerText = lang.net;
+        elements.labelTax.innerText = lang.tax;
+        elements.centerLabel.innerText = lang.center;
+        
+        // Limpiar opciones previas
+        elements.specifics.innerHTML = '';
+        if(currentCountry === 'es' || currentCountry === 'it') {
+            elements.specifics.innerHTML = `
+                <div class="input-group" style="margin-top:10px;">
+                    <label>Número de Pagas</label>
+                    <select id="pagas-select" style="width:100%; padding:8px; border-radius:5px;">
+                        <option value="12">12 Pagas</option>
+                        <option value="14">14 Pagas</option>
+                    </select>
+                </div>`;
+            document.getElementById('pagas-select').addEventListener('change', calculate);
         }
     }
 
-    displayResults(results);
-}
+    // 4. MOTOR DE CÁLCULO (Ajuste Fino 4 Países)
+    function calculate() {
+        let gross = parseFloat(elements.salary.value) || 0;
+        let results = { net: 0, tax: 0, ss: 0, months: 12 };
 
-// --- 7. LÓGICA FISCAL POR PAÍS (Aproximaciones Generales) ---
-function calcES(gross) {
-    const pagas = document.getElementById('pagas-select') ? parseInt(document.getElementById('pagas-select').value) : 12;
-    let ss = gross * 0.0635; // Contingencias comunes aprox
-    let taxBase = gross - ss;
-    let irpf = 0;
-    // Tramos simplificados IRPF
-    if(taxBase > 60000) irpf = taxBase * 0.45;
-    else if(taxBase > 35200) irpf = taxBase * 0.37;
-    else if(taxBase > 20200) irpf = taxBase * 0.30;
-    else if(taxBase > 12450) irpf = taxBase * 0.24;
-    else irpf = taxBase * 0.19;
+        if (gross > 0) {
+            if (currentCountry === 'es') {
+                const pagas = document.getElementById('pagas-select') ? parseInt(document.getElementById('pagas-select').value) : 12;
+                let ss = gross * 0.0635;
+                let irpf = gross * (gross > 35000 ? 0.30 : 0.19); // Lógica simplificada segura
+                results = { net: gross - irpf - ss, tax: irpf, ss: ss, months: pagas };
+            } 
+            else if (currentCountry === 'uk') {
+                let pa = 12570;
+                let taxable = Math.max(0, gross - pa);
+                let tax = taxable * 0.20;
+                let ni = Math.max(0, (gross - 12570) * 0.08);
+                results = { net: gross - tax - ni, tax: tax, ss: ni, months: 12 };
+            }
+            else if (currentCountry === 'it') {
+                let inps = gross * 0.09;
+                let irpef = (gross - inps) * 0.23;
+                results = { net: gross - irpef - inps, tax: irpef, ss: inps, months: 13 };
+            }
+            else if (currentCountry === 'pt') {
+                let ss = gross * 0.11;
+                let irs = gross * 0.14;
+                results = { net: gross - irs - ss, tax: irs, ss: ss, months: 14 };
+            }
+        }
 
-    return { netYearly: gross - irpf - ss, taxYearly: irpf, ssYearly: ss, months: pagas };
-}
-
-function calcUK(gross) {
-    const personalAllowance = 12570;
-    let taxable = Math.max(0, gross - personalAllowance);
-    let tax = 0;
-    if (taxable > 125140) tax = taxable * 0.45;
-    else if (taxable > 37700) tax = taxable * 0.40;
-    else tax = taxable * 0.20;
-
-    let ni = Math.max(0, (gross - 12570) * 0.08); // National Insurance simplificado
-    return { netYearly: gross - tax - ni, taxYearly: tax, ssYearly: ni, months: 12 };
-}
-
-function calcIT(gross) {
-    const pagas = document.getElementById('pagas-select') ? parseInt(document.getElementById('pagas-select').value) : 13;
-    let inps = gross * 0.0919; // Aprox INPS empleado
-    let taxBase = gross - inps;
-    let irpef = taxBase * 0.23; // Simplificación del primer tramo
-    if(taxBase > 28000) irpef = taxBase * 0.35;
-    
-    return { netYearly: gross - irpef - inps, taxYearly: irpef, ssYearly: inps, months: pagas };
-}
-
-function calcPT(gross) {
-    let ss = gross * 0.11; // 11% Segurança Social
-    let irs = gross * 0.14; // Promedio simplificado tabla IRS
-    if (gross > 20000) irs = gross * 0.25;
-    if (gross > 40000) irs = gross * 0.35;
-
-    return { netYearly: gross - irs - ss, taxYearly: irs, ssYearly: ss, months: 14 };
-}
-
-// --- 8. RENDERIZADO DE RESULTADOS Y GRÁFICO PRO ---
-function displayResults(r) {
-    const sym = dict[currentCountry].sym;
-    const netMonthly = r.netYearly / r.months;
-    const totalDeductionsYearly = r.taxYearly + r.ssYearly;
-    const totalDeductionsMonthly = totalDeductionsYearly / r.months;
-    const grossMonthly = netMonthly + totalDeductionsMonthly;
-
-    textNetVal.innerText = `${netMonthly.toFixed(2)} ${sym}`;
-    textTaxVal.innerText = `${totalDeductionsMonthly.toFixed(2)} ${sym}`;
-
-    if(isPro && grossMonthly > 0) {
-        const netPct = (netMonthly / grossMonthly) * 100;
-        const taxPct = (r.taxYearly / r.months / grossMonthly) * 100;
-        const ssPct = (r.ssYearly / r.months / grossMonthly) * 100;
-
-        document.getElementById('chart-net').setAttribute('stroke-dasharray', `${netPct}, 100`);
-        document.getElementById('chart-tax').setAttribute('stroke-dasharray', `${taxPct}, 100`);
-        document.getElementById('chart-ss').setAttribute('stroke-dasharray', `${ssPct}, 100`);
-        
-        document.getElementById('chart-center-val').innerText = `${netPct.toFixed(0)}%`;
+        updateDisplay(results);
     }
-}
 
-// --- 9. FUNCIONES PRO Y COMPRAS (In-App Billing + AdMob) ---
-document.getElementById('btn-upgrade').addEventListener('click', buyPro);
-document.getElementById('btn-restore').addEventListener('click', restorePurchase);
-document.getElementById('btn-add-extra').addEventListener('click', addExtraRow);
+    // 5. ACTUALIZAR PANTALLA Y GRÁFICO
+    function updateDisplay(r) {
+        const sym = dict[currentCountry].sym;
+        const netMonth = r.net / r.months;
+        const taxMonth = (r.tax + r.ss) / r.months;
 
-function buyPro() {
-    // Aquí iría la llamada a la API de Google Play Billing. 
-    // Para la prueba simulamos la compra exitosa:
-    unlockProFeatures();
-}
+        elements.displayNet.innerText = `${netMonth.toFixed(2)} ${sym}`;
+        elements.displayTax.innerText = `${taxMonth.toFixed(2)} ${sym}`;
 
-function restorePurchase() {
-    alert("Buscando compras anteriores...");
-    // Simulación de restauración
-    unlockProFeatures();
-}
+        // Lógica del Gráfico Circular
+        const total = r.net + r.tax + r.ss;
+        if (total > 0) {
+            const netPct = (r.net / total) * 100;
+            const taxPct = (r.tax / total) * 100;
+            const ssPct = (r.ss / total) * 100;
 
-function unlockProFeatures() {
-    isPro = true;
-    document.querySelectorAll('.locked').forEach(el => el.classList.remove('locked'));
-    document.getElementById('ad-banner-container').style.display = 'none'; // Quita los anuncios
-    document.getElementById('btn-upgrade').innerText = '🌟 Eres PRO';
-    document.getElementById('btn-upgrade').disabled = true;
-    calculate(); // Recalcular para activar gráfico
-}
+            document.getElementById('chart-net').setAttribute('stroke-dasharray', `${netPct}, 100`);
+            document.getElementById('chart-tax').setAttribute('stroke-dasharray', `${taxPct}, 100`);
+            document.getElementById('chart-ss').setAttribute('stroke-dasharray', `${ssPct}, 100`);
+            elements.centerVal.innerText = `${netPct.toFixed(0)}%`;
+        }
+    }
 
-function addExtraRow() {
-    if(!isPro) return;
-    const container = document.getElementById('extras-container');
-    const input = document.createElement('input');
-    input.type = 'number';
-    input.placeholder = 'Cantidad (+ o -)';
-    input.className = 'extra-input';
-    input.style.width = '100%';
-    input.style.padding = '8px';
-    input.style.marginTop = '5px';
-    input.addEventListener('input', calculate);
-    
-    container.appendChild(input);
-    extrasList.push(input);
-}
+    // 6. EVENTOS
+    elements.salary.addEventListener('input', calculate);
+    elements.country.addEventListener('change', (e) => {
+        currentCountry = e.target.value;
+        updateCountryUI();
+        calculate();
+    });
+    elements.privacyBtn.addEventListener('click', () => {
+        elements.privacyDiv.classList.toggle('hidden');
+    });
 
-// Inicialización
-updateUIForCountry();
+    // Inicialización
+    updateCountryUI();
+});
