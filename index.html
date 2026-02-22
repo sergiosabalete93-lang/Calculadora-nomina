@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Payroll Pro Global</title>
     <link rel="stylesheet" href="./style.css">
+    <link rel="manifest" href="./manifest.json">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-app-pub-5962342027737970" crossorigin="anonymous"></script>
 </head>
 <body data-theme="light">
@@ -12,10 +13,10 @@
     <div id="settings-sidebar" class="sidebar">
         <div class="sidebar-header">
             <h3 id="lbl-settings">Ajustes</h3>
-            <button id="close-settings">×</button>
+            <button id="close-settings" class="icon-btn">✕</button>
         </div>
         <div class="sidebar-content">
-            <label id="lbl-lang">Idioma:</label>
+            <label id="lbl-lang">Idioma de la App:</label>
             <select id="lang-selector">
                 <option value="es">Español</option>
                 <option value="en">English</option>
@@ -23,7 +24,7 @@
                 <option value="pt">Português</option>
             </select>
             <hr>
-            <button id="btn-restore" class="btn-secondary">Restaurar PRO</button>
+            <button id="btn-restore" class="btn-secondary">Restaurar Compra PRO</button>
         </div>
     </div>
 
@@ -66,16 +67,19 @@
                     </div>
                 </div>
 
-                <div id="hourly-config" class="hidden" style="margin-top:10px;">
-                    <label id="lbl-hours">Horas Semanales:</label>
-                    <input type="number" id="hours-per-week" value="40">
+                <div id="hourly-config" class="hidden input-group" style="margin-top:15px;">
+                    <div class="flex-label">
+                        <label id="lbl-hours">Horas Semanales:</label>
+                    </div>
+                    <input type="number" id="hours-per-week" value="40" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-main);">
                 </div>
 
                 <div id="advanced-options-container">
                     <details>
                         <summary id="lbl-adv-config">⚙️ Configuración Avanzada</summary>
                         <div id="free-options" class="options-grid"></div>
-                        <div class="pro-divider"><span class="pro-badge">PRO</span> <span id="lbl-pro-feat">Extras</span></div>
+                        
+                        <div class="pro-divider"><span class="pro-badge">PRO</span> <span id="lbl-pro-feat">Funciones Extra</span></div>
                         <div id="pro-options" class="options-grid locked"></div>
                     </details>
                 </div>
@@ -89,14 +93,14 @@
                     <div class="res-row highlight"><span id="lbl-res-net">Neto Mensual:</span> <strong id="res-net">0.00</strong></div>
                     
                     <div id="pro-breakdown" class="hidden">
-                        <div class="res-row secondary"><span>Seg. Social:</span> <strong id="det-ss">0.00</strong></div>
-                        <div class="res-row secondary"><span>Impuestos:</span> <strong id="det-tax">0.00</strong></div>
+                        <div class="res-row secondary"><span id="lbl-det-ss">Seguridad Social:</span> <strong id="det-ss">0.00</strong></div>
+                        <div class="res-row secondary"><span id="lbl-det-tax">Impuestos:</span> <strong id="det-tax">0.00</strong></div>
                     </div>
                 </div>
             </section>
 
             <section class="card pro-feature locked" id="chart-section">
-                <h3 id="lbl-chart">Gráfico Fiscal</h3>
+                <h3 id="lbl-chart">Desglose Visual</h3>
                 <div class="chart-container">
                     <svg viewBox="0 0 36 36" class="circular-chart">
                         <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
@@ -105,11 +109,25 @@
                         <path id="chart-net" class="circle net" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
                     </svg>
                 </div>
-                <button id="btn-upgrade" class="btn-primary" style="margin-top:10px; width:100%;">Quitar Anuncios y Desbloquear</button>
+                <button id="btn-upgrade" class="btn-primary" style="margin-top: 15px; width: 100%; font-weight: bold;">Desbloquear PRO (Sin Anuncios)</button>
             </section>
         </main>
-    </div>
 
+        <footer>
+            <button id="btn-privacy" class="btn-text" style="background: none; border: none; color: var(--text-muted); text-decoration: underline; cursor: pointer;">Política de Privacidad</button>
+            <div id="privacy-content" class="hidden card" style="margin-top: 10px; font-size: 0.8rem; color: var(--text-muted);">
+                Los cálculos son estimaciones locales. Utilizamos AdMob para publicidad en la versión gratuita. No guardamos datos financieros.
+            </div>
+        </footer>
+
+        <div id="ad-banner-container" class="ad-banner">
+            <ins class="adsbygoogle"
+                 style="display:inline-block;width:320px;height:50px"
+                 data-ad-client="ca-app-pub-5962342027737970"
+                 data-ad-slot="5311783104"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+    </div>
     <script src="./app.js"></script>
 </body>
 </html>
