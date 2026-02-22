@@ -4,40 +4,90 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Payroll Pro Global</title>
-    
     <link rel="stylesheet" href="./style.css">
     
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-app-pub-5962342027737970" crossorigin="anonymous"></script>
 </head>
-<body>
+<body data-theme="light">
 
     <div id="app-container">
         <header>
-            <h1>Payroll Pro <span>Global</span></h1>
+            <div class="top-bar">
+                <button id="theme-toggle" class="icon-btn">🌓</button>
+                <h1>Payroll Pro <span>Global</span></h1>
+                <button id="settings-btn" class="icon-btn">⚙️</button>
+            </div>
+            
             <select id="country-selector">
-                <option value="es" selected>España 🇪🇸</option>
+                <option value="es">España 🇪🇸</option>
                 <option value="uk">United Kingdom 🇬🇧</option>
                 <option value="it">Italia 🇮🇹</option>
                 <option value="pt">Portugal 🇵🇹</option>
             </select>
         </header>
 
+        <div id="settings-panel" class="hidden card">
+            <h3 id="lbl-settings">Ajustes Generales</h3>
+            <label id="lbl-lang">Idioma de la App:</label>
+            <select id="lang-selector">
+                <option value="es">Español</option>
+                <option value="en">English</option>
+                <option value="it">Italiano</option>
+                <option value="pt">Português</option>
+            </select>
+            <hr>
+            <button id="btn-restore" class="btn-secondary">Restaurar Compra PRO</button>
+        </div>
+
         <main>
-            <section class="card" id="input-section">
+            <div class="mode-selector">
+                <button class="mode-btn active" data-mode="normal" id="mode-normal">Nómina</button>
+                <button class="mode-btn" data-mode="inverse" id="mode-inverse">Neto a Bruto</button>
+                <button class="mode-btn" data-mode="despido" id="mode-despido">Despido</button>
+            </div>
+
+            <section class="card">
                 <div class="input-group">
-                    <label id="label-salary">Sueldo Bruto Anual</label>
+                    <div class="flex-label">
+                        <label id="label-salary">Salario Bruto</label>
+                        <select id="salary-period">
+                            <option value="annual" id="opt-ann">Anual</option>
+                            <option value="monthly" id="opt-mon">Mensual</option>
+                            <option value="hourly" id="opt-hou">Por Hora</option>
+                        </select>
+                    </div>
                     <div class="input-wrapper">
                         <span class="currency-symbol" id="currency-symbol">€</span>
-                        <input type="number" id="main-salary" placeholder="Ej: 30000">
+                        <input type="number" id="main-salary" placeholder="0.00">
                     </div>
                 </div>
 
-                <div id="specific-options"></div>
+                <div id="advanced-options-container">
+                    <details>
+                        <summary id="lbl-adv-config">⚙️ Configuración Avanzada</summary>
+                        
+                        <div id="free-options" class="options-grid"></div>
+                        
+                        <div class="pro-divider"><span class="pro-badge">PRO</span> <span id="lbl-pro-feat">Funciones Extra</span></div>
+                        <div id="pro-options" class="options-grid locked"></div>
+                    </details>
+                </div>
+
+                <button id="calc-trigger-btn" class="btn-calculate">CALCULAR RESULTADOS</button>
+            </section>
+
+            <section class="card result-card">
+                <h3 id="lbl-results">Resultados</h3>
+                <div id="results-display">
+                    <div class="res-row"><span id="lbl-res-gross">Bruto Anual:</span> <strong id="res-gross">0.00</strong></div>
+                    <div class="res-row highlight"><span id="lbl-res-net">Neto Mensual:</span> <strong id="res-net">0.00</strong></div>
+                    <div class="res-row secondary"><span id="lbl-res-tax">Deducciones:</span> <strong id="res-tax">0.00</strong></div>
+                </div>
             </section>
 
             <section class="card pro-feature locked" id="chart-section">
                 <div class="pro-badge">PRO</div>
-                <h3 id="label-breakdown">Desglose Visual</h3>
+                <h3 id="lbl-chart">Desglose Visual</h3>
                 <div class="chart-container">
                     <svg viewBox="0 0 36 36" class="circular-chart">
                         <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
@@ -45,54 +95,26 @@
                         <path id="chart-ss" class="circle ss" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
                         <path id="chart-net" class="circle net" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
                     </svg>
-                    <div id="percentage-center" class="percentage-center">
-                        <span class="net-value" id="chart-center-val">0</span>
-                        <span class="net-label" id="chart-center-label">Neto</span>
-                    </div>
                 </div>
-                <div class="chart-legend">
-                    <div class="legend-item"><span class="dot dot-net"></span> <span id="leg-net">Neto</span></div>
-                    <div class="legend-item"><span class="dot dot-tax"></span> <span id="leg-tax">Impuestos</span></div>
-                    <div class="legend-item"><span class="dot dot-ss"></span> <span id="leg-ss">Seg. Social</span></div>
-                </div>
+                <button id="btn-upgrade" class="btn-primary" style="margin-top: 15px; width: 100%;">Desbloquear PRO (Sin Anuncios)</button>
             </section>
-
-            <section class="card result-card">
-                <div class="result-row">
-                    <span id="label-net-monthly">Sueldo Neto Mensual:</span>
-                    <strong id="net-monthly">0.00 €</strong>
-                </div>
-                <div class="result-row secondary">
-                    <span id="label-total-tax">Total Deducciones:</span>
-                    <span id="total-tax">0.00 €</span>
-                </div>
-            </section>
-
-            <section class="card pro-feature locked" id="extras-section">
-                <div class="pro-badge">PRO</div>
-                <h3 id="label-extras">Ajustes Personalizados</h3>
-                <div id="extras-container">
-                    </div>
-                <button class="btn-add" id="btn-add-extra">+ Añadir Concepto</button>
-            </section>
-
-            <div class="billing-actions">
-                <button id="btn-upgrade" class="btn-primary">Obtener PRO (Sin Anuncios)</button>
-                <button id="btn-restore" class="btn-secondary">Restaurar Compra</button>
-            </div>
         </main>
 
         <footer>
             <button id="btn-privacy" class="btn-text">Política de Privacidad</button>
-            <div id="privacy-content" class="hidden">
-                <h4>Política de Privacidad y Aviso Legal</h4>
-                <p><strong>Payroll Pro Global</strong> procesa todos los cálculos financieros de forma local en su dispositivo. No recopilamos, almacenamos ni transmitimos su información salarial o personal a servidores externos.</p>
-                <p>La aplicación utiliza servicios de publicidad de terceros (Google AdMob) en su versión gratuita, los cuales pueden emplear identificadores anónimos para mostrar anuncios relevantes según las políticas de Google.</p>
-                <p>Los cálculos ofrecidos son estimaciones basadas en la legislación vigente (UK, ES, IT, PT) y no constituyen asesoramiento financiero legal. Consulte siempre a un profesional o entidad tributaria para datos vinculantes.</p>
+            <div id="privacy-content" class="hidden card">
+                <h4>Privacidad y Términos</h4>
+                <p>Calculadora orientativa. Los cálculos se realizan localmente en su dispositivo. Utilizamos Google AdMob para mostrar anuncios en la versión gratuita. No almacenamos sus datos financieros.</p>
             </div>
         </footer>
 
-        <div id="ad-banner-container" class="ad-banner"></div>
+        <div id="ad-banner-container" class="ad-banner">
+            <ins class="adsbygoogle"
+                 style="display:inline-block;width:320px;height:50px"
+                 data-ad-client="ca-app-pub-5962342027737970"
+                 data-ad-slot="5311783104"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
     </div>
 
     <script src="./app.js"></script>
