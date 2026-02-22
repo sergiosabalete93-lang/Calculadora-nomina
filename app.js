@@ -1,5 +1,3 @@
-// app.js - Motor Completo Corregido
-
 document.addEventListener('DOMContentLoaded', () => {
     // 1. ESTADO GLOBAL
     let state = {
@@ -9,103 +7,104 @@ document.addEventListener('DOMContentLoaded', () => {
         mode: 'normal',
         theme: localStorage.getItem('theme') || 'light'
     };
-
     document.body.setAttribute('data-theme', state.theme);
 
-    // 2. DICCIONARIO DE TRADUCCIONES CORREGIDO (Incluye Resultados)
+    // 2. DICCIONARIO COMPLETO (Traducciones Dinámicas)
     const i18n = {
         es: { 
-            sal: 'Salario Bruto', btnCalc: 'CALCULAR RESULTADOS', settings: 'Ajustes Generales',
-            adv: '⚙️ Configuración Avanzada', resGross: 'Bruto Anual:', resNet: 'Neto Mensual:', resTax: 'Deducciones:'
+            sal: 'Salario', btn: 'CALCULAR RESULTADOS', hours: 'Horas Semanales:', 
+            gross: 'Sueldo Bruto:', net: 'Neto Mensual:', tax: 'Impuestos:', ss: 'Seg. Social:',
+            adv: '⚙️ Configuración Avanzada', settings: 'Ajustes', pay: 'Pagas al Año'
         },
         en: { 
-            sal: 'Gross Salary', btnCalc: 'CALCULATE RESULTS', settings: 'General Settings',
-            adv: '⚙️ Advanced Settings', resGross: 'Annual Gross:', resNet: 'Monthly Net:', resTax: 'Total Deductions:'
+            sal: 'Salary', btn: 'CALCULATE RESULTS', hours: 'Weekly Hours:', 
+            gross: 'Gross Pay:', net: 'Monthly Net:', tax: 'Taxes:', ss: 'Social Security:',
+            adv: '⚙️ Advanced Settings', settings: 'Settings', pay: 'Annual Payments'
         },
         it: { 
-            sal: 'Stipendio Lordo', btnCalc: 'CALCOLA RISULTATI', settings: 'Impostazioni',
-            adv: '⚙️ Impostazioni Avanzate', resGross: 'Lordo Annuo:', resNet: 'Netto Mensile:', resTax: 'Trattenute:'
+            sal: 'Stipendio', btn: 'CALCOLA RISULTATI', hours: 'Ore Settimanali:', 
+            gross: 'Lordo:', net: 'Netto Mensile:', tax: 'Imposte:', ss: 'Contributi (INPS):',
+            adv: '⚙️ Impostazioni Avanzate', settings: 'Impostazioni', pay: 'Mensilità'
         },
         pt: { 
-            sal: 'Vencimento Bruto', btnCalc: 'CALCULAR RESULTADOS', settings: 'Definições',
-            adv: '⚙️ Definições Avançadas', resGross: 'Bruto Anual:', resNet: 'Líquido Mensal:', resTax: 'Retenções:'
+            sal: 'Salário', btn: 'CALCULAR RESULTADOS', hours: 'Horas Semanais:', 
+            gross: 'Vencimento Bruto:', net: 'Líquido Mensal:', tax: 'IRS (Imposto):', ss: 'Seg. Social:',
+            adv: '⚙️ Definições Avançadas', settings: 'Definições', pay: 'Prestações Anuais'
         }
     };
 
     // 3. REFERENCIAS DOM
     const DOM = {
-        countrySel: document.getElementById('country-selector'),
+        sidebar: document.getElementById('settings-sidebar'),
+        openSets: document.getElementById('open-settings'),
+        closeSets: document.getElementById('close-settings'),
         langSel: document.getElementById('lang-selector'),
+        countrySel: document.getElementById('country-selector'),
         themeBtn: document.getElementById('theme-toggle'),
-        settingsBtn: document.getElementById('settings-btn'),
-        settingsPanel: document.getElementById('settings-panel'),
-        calcBtn: document.getElementById('calc-trigger-btn'),
-        salaryInput: document.getElementById('main-salary'),
-        periodSel: document.getElementById('salary-period'),
+        modeBtns: document.querySelectorAll('.mode-btn'),
+        salaryPeriod: document.getElementById('salary-period'),
+        hourlyConfig: document.getElementById('hourly-config'),
         freeOpts: document.getElementById('free-options'),
         proOpts: document.getElementById('pro-options'),
-        currency: document.getElementById('currency-symbol'),
-        lblSal: document.getElementById('label-salary'),
-        resGross: document.getElementById('res-gross'),
-        resNet: document.getElementById('res-net'),
-        resTax: document.getElementById('res-tax'),
-        
-        // Referencias para traducción
-        lblAdv: document.getElementById('lbl-adv-config'),
-        lblResGross: document.getElementById('lbl-res-gross'),
-        lblResNet: document.getElementById('lbl-res-net'),
-        lblResTax: document.getElementById('lbl-res-tax'),
-        lblSettings: document.getElementById('lbl-settings'),
-        
-        modeBtns: document.querySelectorAll('.mode-btn'),
+        calcBtn: document.getElementById('calc-trigger-btn'),
+        proBreakdown: document.getElementById('pro-breakdown'),
         btnUpgrade: document.getElementById('btn-upgrade'),
-        btnRestore: document.getElementById('btn-restore')
+        btnRestore: document.getElementById('btn-restore'),
+        currency: document.getElementById('currency-symbol'),
+        privacyBtn: document.getElementById('btn-privacy'),
+        privacyDiv: document.getElementById('privacy-content')
     };
 
-    // 4. EVENTOS DE INTERFAZ
-    DOM.themeBtn.addEventListener('click', () => {
+    // 4. EVENTOS DE UI (Sidebar, Modos, Periodos)
+    DOM.themeBtn.onclick = () => {
         state.theme = state.theme === 'light' ? 'dark' : 'light';
         document.body.setAttribute('data-theme', state.theme);
         localStorage.setItem('theme', state.theme);
-    });
+    };
 
-    DOM.settingsBtn.addEventListener('click', () => DOM.settingsPanel.classList.toggle('hidden'));
-    
-    DOM.langSel.addEventListener('change', (e) => {
-        state.lang = e.target.value;
-        updateLanguage();
-    });
+    DOM.openSets.onclick = () => DOM.sidebar.classList.add('open');
+    DOM.closeSets.onclick = () => DOM.sidebar.classList.remove('open');
 
-    DOM.countrySel.addEventListener('change', (e) => {
-        state.country = e.target.value;
-        renderAdvancedOptions();
-        updateLanguage();
-    });
+    DOM.langSel.onchange = (e) => { state.lang = e.target.value; updateLanguage(); };
+    DOM.countrySel.onchange = (e) => { state.country = e.target.value; updateLanguage(); renderAdvancedOptions(); };
 
     DOM.modeBtns.forEach(btn => {
-        btn.addEventListener('click', (e) => {
+        btn.onclick = (e) => {
+            if (e.target.classList.contains('pro-lock') && !state.isPro) {
+                alert("Esta función requiere la versión PRO.");
+                return;
+            }
             DOM.modeBtns.forEach(b => b.classList.remove('active'));
             e.target.classList.add('active');
             state.mode = e.target.dataset.mode;
-            DOM.lblSal.innerText = state.mode === 'inverse' ? 'Objetivo Neto Mínimo' : i18n[state.lang].sal;
-        });
+        };
     });
 
-    // 5. INYECCIÓN DE OPCIONES POR PAÍS
+    DOM.salaryPeriod.onchange = (e) => {
+        DOM.hourlyConfig.classList.toggle('hidden', e.target.value !== 'hourly');
+        renderAdvancedOptions(); // Actualiza si muestra o no las pagas (12/14)
+    };
+
+    DOM.privacyBtn.onclick = () => DOM.privacyDiv.classList.toggle('hidden');
+
+    // 5. RENDERIZADO DE OPCIONES POR PAÍS (Gratis y Pro)
     function renderAdvancedOptions() {
         DOM.freeOpts.innerHTML = '';
         DOM.proOpts.innerHTML = '';
+        const isAnnual = DOM.salaryPeriod.value === 'annual';
+        const t = i18n[state.lang];
 
         if(state.country === 'es') {
-            DOM.freeOpts.innerHTML = `
-                <div><label>Pagas</label><select id="es-pagas"><option value="12">12</option><option value="14">14</option></select></div>
-                <div><label>IRPF Manual (%)</label><input type="number" id="es-irpf" placeholder="Auto"></div>
-            `;
+            let freeHtml = `<div><label>IRPF (%) Manual</label><input type="number" id="es-irpf" placeholder="Auto"></div>`;
+            if (isAnnual) freeHtml += `<div><label>${t.pay}</label><select id="es-pagas"><option value="12">12</option><option value="14">14</option></select></div>`;
+            DOM.freeOpts.innerHTML = freeHtml;
+            
             DOM.proOpts.innerHTML = `
                 <div><label>Hijos Menores</label><input type="number" id="es-hijos" placeholder="0"></div>
                 <div><label>Discapacidad</label><select><option>No</option><option>>33%</option><option>>65%</option></select></div>
             `;
-        } else if(state.country === 'uk') {
+        } 
+        else if(state.country === 'uk') {
             DOM.freeOpts.innerHTML = `
                 <div><label>Pension (%)</label><input type="number" id="uk-pen" placeholder="5"></div>
                 <div><label>2nd Job?</label><select><option value="no">No</option><option value="yes">Yes (BR)</option></select></div>
@@ -114,139 +113,131 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div><label>Tax Code</label><input type="text" id="uk-code" placeholder="1257L"></div>
                 <div><label>Student Loan</label><select><option>None</option><option>Plan 1</option><option>Plan 2</option></select></div>
             `;
-        } else if(state.country === 'pt') {
-            DOM.freeOpts.innerHTML = `
-                <div><label>Estado Civil</label><select><option>Solteiro</option><option>Casado (1 tit.)</option></select></div>
+        } 
+        else if(state.country === 'it') {
+            let freeHtml = `<div><label>Familiari a carico</label><input type="number" placeholder="0"></div>`;
+            if (isAnnual) freeHtml += `<div><label>${t.pay}</label><select id="it-pagas"><option value="13">13</option><option value="14">14</option></select></div>`;
+            DOM.freeOpts.innerHTML = freeHtml;
+            
+            DOM.proOpts.innerHTML = `
+                <div><label>Addizionale (%)</label><input type="number" placeholder="0"></div>
+                <div><label>TFR</label><select><option>Si</option><option>No</option></select></div>
+            `;
+        } 
+        else if(state.country === 'pt') {
+            let freeHtml = `
+                <div><label>Estado Civil</label><select><option>Solteiro</option><option>Casado (1 tit)</option></select></div>
                 <div><label>Dependentes</label><input type="number" placeholder="0"></div>
             `;
+            // PT siempre usa 14 pagas legalmente en anual, no damos opción a quitarlo.
+            DOM.freeOpts.innerHTML = freeHtml;
+
             DOM.proOpts.innerHTML = `
-                <div><label>Sub. Alimentação</label><input type="number" placeholder="Valor Diario"></div>
+                <div><label>Sub. Alimentação</label><input type="number" placeholder="Valor Dia"></div>
                 <div><label>Região</label><select><option>Continente</option><option>Açores</option></select></div>
             `;
-        } else if(state.country === 'it') {
-            DOM.freeOpts.innerHTML = `
-                <div><label>Mensilità</label><select><option>13</option><option>14</option></select></div>
-                <div><label>Figli a carico</label><input type="number" placeholder="0"></div>
-            `;
-            DOM.proOpts.innerHTML = `
-                <div><label>Addizionale Regionale</label><input type="number" placeholder="%"></div>
-                <div><label>Calcolo TFR</label><select><option>Si</option><option>No</option></select></div>
-            `;
         }
     }
 
-    // 6. ACTUALIZAR IDIOMA Y MONEDA
+    // 6. ACTUALIZAR IDIOMAS
     function updateLanguage() {
-        const langData = i18n[state.lang];
+        const t = i18n[state.lang];
+        document.getElementById('label-salary').innerText = t.sal;
+        DOM.calcBtn.innerText = t.btn;
+        document.getElementById('lbl-settings').innerText = t.settings;
+        document.getElementById('lbl-hours').innerText = t.hours;
+        document.getElementById('lbl-adv-config').innerText = t.adv;
+        document.getElementById('lbl-res-gross').innerText = t.gross;
+        document.getElementById('lbl-res-net').innerText = t.net;
+        document.getElementById('lbl-det-tax').innerText = t.tax;
+        document.getElementById('lbl-det-ss').innerText = t.ss;
         
-        // Textos
-        DOM.lblSal.innerText = state.mode === 'inverse' ? 'Objetivo Neto' : langData.sal;
-        DOM.calcBtn.innerText = langData.btnCalc;
-        DOM.lblSettings.innerText = langData.settings;
-        DOM.lblAdv.innerText = langData.adv;
-        DOM.lblResGross.innerText = langData.resGross;
-        DOM.lblResNet.innerText = langData.resNet;
-        DOM.lblResTax.innerText = langData.resTax;
-        
-        // Símbolo Moneda
         let symMap = { es: '€', it: '€', pt: '€', uk: '£' };
         DOM.currency.innerText = symMap[state.country];
+        renderAdvancedOptions();
     }
 
-    // 7. MOTOR DE CÁLCULO Y ADMOB
-    DOM.calcBtn.addEventListener('click', () => {
-        // Disparador AdMob Intersticial
-        if (!state.isPro) {
-            console.log("AdMob: Solicitando Intersticial ID: ca-app-pub-5962342027737970/3998701433");
-        }
+    // 7. MOTOR DE CÁLCULO
+    DOM.calcBtn.onclick = () => {
+        if (!state.isPro) console.log("AdMob: Intersticial ID ca-app-pub-5962342027737970/xxxxxx");
 
-        const inputVal = parseFloat(DOM.salaryInput.value) || 0;
-        const period = DOM.periodSel.value;
+        const rawSal = parseFloat(document.getElementById('main-salary').value) || 0;
+        const period = DOM.salaryPeriod.value;
+        const hours = parseFloat(document.getElementById('hours-per-week').value) || 40;
         
-        // Normalizar a Anual
-        let grossAnnual = inputVal;
-        if (period === 'monthly') grossAnnual = inputVal * 12;
-        if (period === 'hourly') grossAnnual = inputVal * 40 * 52; 
+        let annualGross = 0;
+        if(period === 'annual') annualGross = rawSal;
+        else if(period === 'monthly') annualGross = rawSal * 12;
+        else if(period === 'hourly') annualGross = rawSal * hours * 52;
 
-        if(state.mode === 'inverse') {
-            grossAnnual = grossAnnual * 1.35; // Aprox bruto necesario
-        } else if (state.mode === 'despido') {
-            alert("Modo Despido Activo: Requiere introducir fechas (Función PRO en desarrollo visual)");
-            return;
-        }
-
-        let results = calculateTaxes(grossAnnual, state.country);
+        let results = executeTaxEngine(annualGross, state.country);
         displayResults(results);
-    });
+    };
 
-    function calculateTaxes(gross, country) {
-        let net = 0, tax = 0, ss = 0, months = 12;
+    function executeTaxEngine(gross, country) {
+        let tax = 0, ss = 0, months = 12;
+        const isAnnual = DOM.salaryPeriod.value === 'annual';
 
         if(country === 'es') {
-            months = document.getElementById('es-pagas') ? parseInt(document.getElementById('es-pagas').value) : 12;
-            let manualIrpf = document.getElementById('es-irpf') ? parseFloat(document.getElementById('es-irpf').value) : null;
+            if (isAnnual) months = parseInt(document.getElementById('es-pagas')?.value || 12);
+            let manualIrpf = parseFloat(document.getElementById('es-irpf')?.value);
             
-            ss = gross * 0.0635;
-            tax = manualIrpf ? (gross * (manualIrpf/100)) : (gross * 0.19);
-            net = gross - tax - ss;
-        } else if(country === 'uk') {
-            let pa = 12570;
-            let taxable = Math.max(0, gross - pa);
-            tax = taxable * 0.20;
-            ss = Math.max(0, (gross - pa) * 0.08);
-            net = gross - tax - ss;
-        } else if (country === 'pt') {
-            months = 14;
-            ss = gross * 0.11;
-            tax = gross * 0.14; 
-            net = gross - tax - ss;
-        } else if (country === 'it') {
-            months = 13;
+            ss = gross * 0.0647; 
+            tax = !isNaN(manualIrpf) ? (gross * (manualIrpf/100)) : (gross * 0.19);
+        } 
+        else if(country === 'uk') {
+            ss = Math.max(0, (gross - 12570) * 0.08);
+            tax = Math.max(0, (gross - 12570) * 0.20);
+        }
+        else if(country === 'it') {
+            if (isAnnual) months = parseInt(document.getElementById('it-pagas')?.value || 13);
             ss = gross * 0.0919;
-            tax = (gross - ss) * 0.23;
-            net = gross - tax - ss;
+            tax = Math.max(0, (gross - ss) * 0.23);
+        }
+        else if(country === 'pt') {
+            months = isAnnual ? 14 : 12;
+            ss = gross * 0.11;
+            tax = gross * 0.145; 
         }
 
-        return { gross, net, tax, ss, months };
+        return { gross, net: (gross - tax - ss), tax, ss, months };
     }
 
     function displayResults(r) {
-        const sym = DOM.currency.innerText;
         const netMonth = r.net / r.months;
-        const totalDeductions = (r.tax + r.ss) / r.months;
-
-        DOM.resGross.innerText = `${r.gross.toFixed(2)} ${sym}`;
-        DOM.resNet.innerText = `${netMonth.toFixed(2)} ${sym}`;
-        DOM.resTax.innerText = `${totalDeductions.toFixed(2)} ${sym}`;
-
+        document.getElementById('res-gross').innerText = r.gross.toFixed(2) + ' ' + DOM.currency.innerText;
+        document.getElementById('res-net').innerText = netMonth.toFixed(2) + ' ' + DOM.currency.innerText;
+        
         if(state.isPro && r.gross > 0) {
-            const total = r.net + r.tax + r.ss;
-            const netPct = (r.net / total) * 100;
-            const taxPct = (r.tax / total) * 100;
-            const ssPct = (r.ss / total) * 100;
+            DOM.proBreakdown.classList.remove('hidden');
+            document.getElementById('det-ss').innerText = (r.ss / r.months).toFixed(2);
+            document.getElementById('det-tax').innerText = (r.tax / r.months).toFixed(2);
 
-            document.getElementById('chart-net').setAttribute('stroke-dasharray', `${netPct}, 100`);
-            document.getElementById('chart-tax').setAttribute('stroke-dasharray', `${taxPct}, 100`);
-            document.getElementById('chart-ss').setAttribute('stroke-dasharray', `${ssPct}, 100`);
+            const total = r.net + r.tax + r.ss;
+            document.getElementById('chart-net').setAttribute('stroke-dasharray', `${(r.net/total)*100}, 100`);
+            document.getElementById('chart-tax').setAttribute('stroke-dasharray', `${(r.tax/total)*100}, 100`);
+            document.getElementById('chart-ss').setAttribute('stroke-dasharray', `${(r.ss/total)*100}, 100`);
+        } else {
+            DOM.proBreakdown.classList.add('hidden');
         }
     }
 
-    // 8. LÓGICA DE COMPRA PRO
+    // 8. FUNCIONES PRO
     function unlockPro() {
         state.isPro = true;
-        document.querySelectorAll('.locked').forEach(el => el.classList.remove('locked'));
-        document.getElementById('ad-banner-container').style.display = 'none'; 
-        DOM.btnUpgrade.style.display = 'none'; 
-        alert("¡Versión PRO Desbloqueada! Anuncios eliminados y funciones activadas.");
+        document.querySelectorAll('.locked, .pro-lock').forEach(el => {
+            el.classList.remove('locked');
+            el.classList.remove('pro-lock');
+            el.innerText = el.innerText.replace('🔒', '').trim();
+        });
+        document.getElementById('ad-banner-container').style.display = 'none';
+        DOM.btnUpgrade.style.display = 'none';
+        alert("Versión PRO Desbloqueada.");
     }
 
-    DOM.btnUpgrade.addEventListener('click', unlockPro);
-    DOM.btnRestore.addEventListener('click', unlockPro);
+    DOM.btnUpgrade.onclick = unlockPro;
+    DOM.btnRestore.onclick = unlockPro;
 
-    // Init SW
-    if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
-
-    // Arranque
-    renderAdvancedOptions();
+    // Inicialización
     updateLanguage();
 });
