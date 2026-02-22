@@ -1,84 +1,37 @@
-const CACHE_NAME = 'payroll-pro-v3';
-
-// Archivos vitales para el funcionamiento offline
+const CACHE_NAME = 'payroll-v2';
 const ASSETS = [
-  './',
-  './index.html',
-  './manifest.json',
-  'https://cdn.tailwindcss.com',
-  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css'
+  "./",
+  "./index.html",
+  "./manifest.json",
+  "./icon-192.png",
+  "./icon-512.png"
 ];
 
-// 1. INSTALACIÓN: Precarga los archivos estáticos
+// Instalación
 self.addEventListener('install', (event) => {
-  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('[Service Worker] Guardando archivos para uso offline...');
-      // Usamos Promise.all con fetch individual para evitar que un fallo en un CDN bloquee todo
+      return cache.addAll(ASSETS);
+    })
+  );
+});
+
+// Activación (Limpia cachés antiguas)
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((keys) => {
       return Promise.all(
-        ASSETS.map(url => {
-          return fetch(url).then(response => {
-            if (!response.ok) throw new Error('Error en red: ' + url);
-            return cache.put(url, response);
-          }).catch(error => console.warn('[Service Worker] Fallo al cachear (se intentará luego):', url, error));
-        })
+        keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
       );
     })
   );
 });
 
-// 2. ACTIVACIÓN: Limpia cachés de versiones anteriores
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((keyList) => {
-      return Promise.all(keyList.map((key) => {
-        if (key !== CACHE_NAME) {
-          console.log('[Service Worker] Borrando caché antigua:', key);
-          return caches.delete(key);
-        }
-      }));
-    })
-  );
-  self.clients.claim();
-});
-
-// 3. INTERCEPTACIÓN DE RED: Cache First, Network Fallback
+// Respuesta Offline
 self.addEventListener('fetch', (event) => {
-  // Solo manejamos peticiones GET
-  if (event.request.method !== 'GET') return;
-
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      // Si el archivo está en caché, devuélvelo inmediatamente
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-
-      // Si no está en caché, búscalo en internet y guárdalo para la próxima vez
-      return fetch(event.request).then((networkResponse) => {
-        // Asegurarse de que la respuesta es válida antes de cachearla
-        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
-          // Si es un recurso externo (CDN) tipo 'opaque', lo cacheamos igual si es necesario
-          if(networkResponse && networkResponse.type === 'opaque') {
-             const responseToCache = networkResponse.clone();
-             caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseToCache));
-          }
-          return networkResponse;
-        }
-
-        const responseToCache = networkResponse.clone();
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, responseToCache);
-        });
-
-        return networkResponse;
-      }).catch(() => {
-        // Fallback final: Si no hay internet y falla todo, intenta cargar el index.html
-        if (event.request.mode === 'navigate') {
-          return caches.match('./index.html');
-        }
-      });
+    caches.match(event.request).then((response) => {
+      return response || fetch(event.request);
     })
   );
 });
