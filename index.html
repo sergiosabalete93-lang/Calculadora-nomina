@@ -24,9 +24,12 @@
                 <option value="pt">Português</option>
             </select>
             <hr>
-            <button id="btn-restore" class="btn-secondary">Restaurar Compra PRO</button>
+            <button id="btn-upgrade" class="btn-primary btn-gold" style="margin-bottom: 10px;">⭐ Hacerme PRO</button>
+            <button id="btn-restore" class="btn-secondary">Restaurar Compra</button>
         </div>
     </div>
+
+    <div id="sidebar-overlay" class="overlay hidden"></div>
 
     <div id="app-container">
         <header>
@@ -54,7 +57,7 @@
             <section class="card">
                 <div class="input-group">
                     <div class="flex-label">
-                        <label id="label-salary">Salario</label>
+                        <label id="label-salary">Salario Base</label>
                         <select id="salary-period">
                             <option value="annual" id="opt-ann">Anual</option>
                             <option value="monthly" id="opt-mon">Mensual</option>
@@ -63,7 +66,7 @@
                     </div>
                     <div class="input-wrapper">
                         <span class="currency-symbol" id="currency-symbol">€</span>
-                        <input type="number" id="main-salary" placeholder="0.00">
+                        <input type="number" id="main-salary" placeholder="0.00" value="0">
                     </div>
                 </div>
 
@@ -71,11 +74,11 @@
                     <div class="flex-label">
                         <label id="lbl-hours">Horas Semanales:</label>
                     </div>
-                    <input type="number" id="hours-per-week" value="40" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-main);">
+                    <input type="number" id="hours-per-week" value="40" class="full-input">
                 </div>
 
                 <div id="advanced-options-container">
-                    <details>
+                    <details open>
                         <summary id="lbl-adv-config">⚙️ Configuración Avanzada</summary>
                         <div id="free-options" class="options-grid"></div>
                         
@@ -89,7 +92,7 @@
 
             <section class="card result-card">
                 <div id="results-display">
-                    <div class="res-row"><span id="lbl-res-gross">Bruto:</span> <strong id="res-gross">0.00</strong></div>
+                    <div class="res-row"><span id="lbl-res-gross">Bruto Anualizado:</span> <strong id="res-gross">0.00</strong></div>
                     <div class="res-row highlight"><span id="lbl-res-net">Neto Mensual:</span> <strong id="res-net">0.00</strong></div>
                     
                     <div id="pro-breakdown" class="hidden">
@@ -109,16 +112,8 @@
                         <path id="chart-net" class="circle net" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
                     </svg>
                 </div>
-                <button id="btn-upgrade" class="btn-primary" style="margin-top: 15px; width: 100%; font-weight: bold;">Desbloquear PRO (Sin Anuncios)</button>
             </section>
         </main>
-
-        <footer>
-            <button id="btn-privacy" class="btn-text" style="background: none; border: none; color: var(--text-muted); text-decoration: underline; cursor: pointer;">Política de Privacidad</button>
-            <div id="privacy-content" class="hidden card" style="margin-top: 10px; font-size: 0.8rem; color: var(--text-muted);">
-                Los cálculos son estimaciones locales. Utilizamos AdMob para publicidad en la versión gratuita. No guardamos datos financieros.
-            </div>
-        </footer>
 
         <div id="ad-banner-container" class="ad-banner">
             <ins class="adsbygoogle"
