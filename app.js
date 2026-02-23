@@ -1,47 +1,74 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 1. ESTADO GLOBAL
     let state = {
-        isPro: false,
-        country: 'es',
-        lang: 'es',
+        isPro: localStorage.getItem('isPro') === 'true',
+        country: localStorage.getItem('country') || 'es',
+        lang: localStorage.getItem('lang') || 'es',
         mode: 'normal',
         theme: localStorage.getItem('theme') || 'light'
     };
-    document.body.setAttribute('data-theme', state.theme);
 
-    // 2. DICCIONARIO COMPLETO (Traducciones Dinámicas)
+    document.body.setAttribute('data-theme', state.theme);
+    document.getElementById('country-selector').value = state.country;
+    document.getElementById('lang-selector').value = state.lang;
+
+    // 2. DICCIONARIO COMPLETO (100% Traducido)
     const i18n = {
         es: { 
-            sal: 'Salario', btn: 'CALCULAR RESULTADOS', hours: 'Horas Semanales:', 
-            gross: 'Sueldo Bruto:', net: 'Neto Mensual:', tax: 'Impuestos:', ss: 'Seg. Social:',
-            adv: '⚙️ Configuración Avanzada', settings: 'Ajustes', pay: 'Pagas al Año'
+            sal: 'Salario Base', btn: 'CALCULAR', hours: 'Horas Semanales:', 
+            gross: 'Bruto Anual:', net: 'Neto Mensual:', tax: 'Impuestos (IRPF):', ss: 'Seguridad Social:',
+            adv: '⚙️ Configuración Avanzada', settings: 'Ajustes', feat: 'Funciones Extra', chart: 'Desglose Visual',
+            mode1: 'Nómina', mode2: 'Neto > Bruto 🔒', mode3: 'Despido 🔒',
+            optAnn: 'Anual', optMon: 'Mensual', optHou: 'Por Hora',
+            // Traducciones Avanzadas Dinámicas
+            adv_pay: 'Pagas al Año', adv_irpf: 'IRPF % (Manual)', adv_hijos: 'Hijos Menores', adv_disc: 'Discapacidad',
+            adv_pen: 'Pensión (%)', adv_2nd: '2º Trabajo?', adv_code: 'Tax Code', adv_loan: 'Student Loan',
+            adv_fam: 'Familiares a Cargo', adv_add: 'Addizionale Regionale', adv_tfr: 'TFR en Nómina',
+            adv_civ: 'Estado Civil', adv_dep: 'Dependentes', adv_sub: 'Sub. Alimentação (Día)', adv_reg: 'Região'
         },
         en: { 
-            sal: 'Salary', btn: 'CALCULATE RESULTS', hours: 'Weekly Hours:', 
-            gross: 'Gross Pay:', net: 'Monthly Net:', tax: 'Taxes:', ss: 'Social Security:',
-            adv: '⚙️ Advanced Settings', settings: 'Settings', pay: 'Annual Payments'
+            sal: 'Base Salary', btn: 'CALCULATE', hours: 'Weekly Hours:', 
+            gross: 'Annual Gross:', net: 'Monthly Net:', tax: 'Income Tax:', ss: 'National Insurance:',
+            adv: '⚙️ Advanced Settings', settings: 'Settings', feat: 'Pro Features', chart: 'Visual Breakdown',
+            mode1: 'Salary', mode2: 'Net > Gross 🔒', mode3: 'Severance 🔒',
+            optAnn: 'Annually', optMon: 'Monthly', optHou: 'Hourly',
+            adv_pay: 'Payments/Year', adv_irpf: 'Custom Tax %', adv_hijos: 'Children', adv_disc: 'Disability',
+            adv_pen: 'Pension (%)', adv_2nd: '2nd Job?', adv_code: 'Tax Code', adv_loan: 'Student Loan',
+            adv_fam: 'Dependents', adv_add: 'Regional Tax', adv_tfr: 'TFR in Payslip',
+            adv_civ: 'Marital Status', adv_dep: 'Dependents', adv_sub: 'Meal Allowance (Day)', adv_reg: 'Region'
         },
         it: { 
-            sal: 'Stipendio', btn: 'CALCOLA RISULTATI', hours: 'Ore Settimanali:', 
-            gross: 'Lordo:', net: 'Netto Mensile:', tax: 'Imposte:', ss: 'Contributi (INPS):',
-            adv: '⚙️ Impostazioni Avanzate', settings: 'Impostazioni', pay: 'Mensilità'
+            sal: 'Stipendio Base', btn: 'CALCOLA', hours: 'Ore Settimanali:', 
+            gross: 'Lordo Annuo:', net: 'Netto Mensile:', tax: 'Imposte (IRPEF):', ss: 'Contributi (INPS):',
+            adv: '⚙️ Impostazioni Avanzate', settings: 'Impostazioni', feat: 'Funzioni Extra', chart: 'Grafico Fiscale',
+            mode1: 'Busta Paga', mode2: 'Netto > Lordo 🔒', mode3: 'Licenziamento 🔒',
+            optAnn: 'Annuale', optMon: 'Mensile', optHou: 'Orario',
+            adv_pay: 'Mensilità', adv_irpf: 'IRPEF Manuale %', adv_hijos: 'Figli a carico', adv_disc: 'Disabilità',
+            adv_pen: 'Pensione (%)', adv_2nd: '2° Lavoro?', adv_code: 'Tax Code', adv_loan: 'Student Loan',
+            adv_fam: 'Familiari a Carico', adv_add: 'Addizionale Regionale', adv_tfr: 'TFR in Busta',
+            adv_civ: 'Stato Civile', adv_dep: 'Persone a Carico', adv_sub: 'Buoni Pasto (Giorno)', adv_reg: 'Regione'
         },
         pt: { 
-            sal: 'Salário', btn: 'CALCULAR RESULTADOS', hours: 'Horas Semanais:', 
-            gross: 'Vencimento Bruto:', net: 'Líquido Mensal:', tax: 'IRS (Imposto):', ss: 'Seg. Social:',
-            adv: '⚙️ Definições Avançadas', settings: 'Definições', pay: 'Prestações Anuais'
+            sal: 'Salário Base', btn: 'CALCULAR', hours: 'Horas Semanais:', 
+            gross: 'Bruto Anual:', net: 'Líquido Mensal:', tax: 'Imposto (IRS):', ss: 'Seg. Social:',
+            adv: '⚙️ Definições Avançadas', settings: 'Definições', feat: 'Funções Extra', chart: 'Gráfico Fiscal',
+            mode1: 'Salário', mode2: 'Líquido > Bruto 🔒', mode3: 'Despedimento 🔒',
+            optAnn: 'Anual', optMon: 'Mensal', optHou: 'À Hora',
+            adv_pay: 'Prestações/Ano', adv_irpf: 'IRS Manual %', adv_hijos: 'Filhos', adv_disc: 'Deficiência',
+            adv_pen: 'Pensão (%)', adv_2nd: '2º Trabalho?', adv_code: 'Tax Code', adv_loan: 'Student Loan',
+            adv_fam: 'Dependentes', adv_add: 'Imposto Regional', adv_tfr: 'TFR',
+            adv_civ: 'Estado Civil', adv_dep: 'Dependentes', adv_sub: 'Sub. Alimentação (Dia)', adv_reg: 'Região'
         }
     };
 
-    // 3. REFERENCIAS DOM
+    // 3. CACHEO DEL DOM
     const DOM = {
         sidebar: document.getElementById('settings-sidebar'),
+        overlay: document.getElementById('sidebar-overlay'),
         openSets: document.getElementById('open-settings'),
         closeSets: document.getElementById('close-settings'),
         langSel: document.getElementById('lang-selector'),
         countrySel: document.getElementById('country-selector'),
-        themeBtn: document.getElementById('theme-toggle'),
-        modeBtns: document.querySelectorAll('.mode-btn'),
         salaryPeriod: document.getElementById('salary-period'),
         hourlyConfig: document.getElementById('hourly-config'),
         freeOpts: document.getElementById('free-options'),
@@ -49,45 +76,56 @@ document.addEventListener('DOMContentLoaded', () => {
         calcBtn: document.getElementById('calc-trigger-btn'),
         proBreakdown: document.getElementById('pro-breakdown'),
         btnUpgrade: document.getElementById('btn-upgrade'),
-        btnRestore: document.getElementById('btn-restore'),
-        currency: document.getElementById('currency-symbol'),
-        privacyBtn: document.getElementById('btn-privacy'),
-        privacyDiv: document.getElementById('privacy-content')
+        btnRestore: document.getElementById('btn-restore')
     };
 
-    // 4. EVENTOS DE UI (Sidebar, Modos, Periodos)
-    DOM.themeBtn.onclick = () => {
+    // 4. EVENTOS DE INTERFAZ
+    document.getElementById('theme-toggle').onclick = () => {
         state.theme = state.theme === 'light' ? 'dark' : 'light';
         document.body.setAttribute('data-theme', state.theme);
         localStorage.setItem('theme', state.theme);
     };
 
-    DOM.openSets.onclick = () => DOM.sidebar.classList.add('open');
-    DOM.closeSets.onclick = () => DOM.sidebar.classList.remove('open');
+    const toggleSidebar = (show) => {
+        DOM.sidebar.classList.toggle('open', show);
+        DOM.overlay.classList.toggle('hidden', !show);
+    };
+    DOM.openSets.onclick = () => toggleSidebar(true);
+    DOM.closeSets.onclick = () => toggleSidebar(false);
+    DOM.overlay.onclick = () => toggleSidebar(false);
 
-    DOM.langSel.onchange = (e) => { state.lang = e.target.value; updateLanguage(); };
-    DOM.countrySel.onchange = (e) => { state.country = e.target.value; updateLanguage(); renderAdvancedOptions(); };
+    DOM.langSel.onchange = (e) => { 
+        state.lang = e.target.value; 
+        localStorage.setItem('lang', state.lang);
+        updateLanguage(); 
+    };
+    
+    DOM.countrySel.onchange = (e) => { 
+        state.country = e.target.value; 
+        localStorage.setItem('country', state.country);
+        updateLanguage(); 
+    };
 
-    DOM.modeBtns.forEach(btn => {
+    document.querySelectorAll('.mode-btn').forEach(btn => {
         btn.onclick = (e) => {
             if (e.target.classList.contains('pro-lock') && !state.isPro) {
-                alert("Esta función requiere la versión PRO.");
+                alert(i18n[state.lang].settings + ": Requiere PRO / Needs PRO.");
                 return;
             }
-            DOM.modeBtns.forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
             e.target.classList.add('active');
             state.mode = e.target.dataset.mode;
         };
     });
 
+    // Control de Lógica de Entradas (Anual / Mensual / Horas)
     DOM.salaryPeriod.onchange = (e) => {
-        DOM.hourlyConfig.classList.toggle('hidden', e.target.value !== 'hourly');
-        renderAdvancedOptions(); // Actualiza si muestra o no las pagas (12/14)
+        const period = e.target.value;
+        DOM.hourlyConfig.classList.toggle('hidden', period !== 'hourly');
+        renderAdvancedOptions(); // Re-dibuja para mostrar u ocultar "Pagas"
     };
 
-    DOM.privacyBtn.onclick = () => DOM.privacyDiv.classList.toggle('hidden');
-
-    // 5. RENDERIZADO DE OPCIONES POR PAÍS (Gratis y Pro)
+    // 5. RENDERIZAR CONFIGURACIÓN AVANZADA
     function renderAdvancedOptions() {
         DOM.freeOpts.innerHTML = '';
         DOM.proOpts.innerHTML = '';
@@ -95,51 +133,39 @@ document.addEventListener('DOMContentLoaded', () => {
         const t = i18n[state.lang];
 
         if(state.country === 'es') {
-            let freeHtml = `<div><label>IRPF (%) Manual</label><input type="number" id="es-irpf" placeholder="Auto"></div>`;
-            if (isAnnual) freeHtml += `<div><label>${t.pay}</label><select id="es-pagas"><option value="12">12</option><option value="14">14</option></select></div>`;
+            let freeHtml = `<div><label>${t.adv_irpf}</label><input type="number" id="es-irpf" placeholder="Auto"></div>`;
+            if (isAnnual) freeHtml += `<div><label>${t.adv_pay}</label><select id="es-pagas"><option value="12">12</option><option value="14">14</option></select></div>`;
             DOM.freeOpts.innerHTML = freeHtml;
             
-            DOM.proOpts.innerHTML = `
-                <div><label>Hijos Menores</label><input type="number" id="es-hijos" placeholder="0"></div>
-                <div><label>Discapacidad</label><select><option>No</option><option>>33%</option><option>>65%</option></select></div>
-            `;
+            DOM.proOpts.innerHTML = `<div><label>${t.adv_hijos}</label><input type="number" placeholder="0"></div>
+                                     <div><label>${t.adv_disc}</label><select><option>No</option><option>>33%</option></select></div>`;
         } 
         else if(state.country === 'uk') {
-            DOM.freeOpts.innerHTML = `
-                <div><label>Pension (%)</label><input type="number" id="uk-pen" placeholder="5"></div>
-                <div><label>2nd Job?</label><select><option value="no">No</option><option value="yes">Yes (BR)</option></select></div>
-            `;
-            DOM.proOpts.innerHTML = `
-                <div><label>Tax Code</label><input type="text" id="uk-code" placeholder="1257L"></div>
-                <div><label>Student Loan</label><select><option>None</option><option>Plan 1</option><option>Plan 2</option></select></div>
-            `;
+            DOM.freeOpts.innerHTML = `<div><label>${t.adv_pen}</label><input type="number" placeholder="5"></div>
+                                      <div><label>${t.adv_2nd}</label><select><option>No</option><option>Yes</option></select></div>`;
+            DOM.proOpts.innerHTML = `<div><label>${t.adv_code}</label><input type="text" placeholder="1257L"></div>
+                                     <div><label>${t.adv_loan}</label><select><option>None</option><option>Plan 1</option></select></div>`;
         } 
         else if(state.country === 'it') {
-            let freeHtml = `<div><label>Familiari a carico</label><input type="number" placeholder="0"></div>`;
-            if (isAnnual) freeHtml += `<div><label>${t.pay}</label><select id="it-pagas"><option value="13">13</option><option value="14">14</option></select></div>`;
+            let freeHtml = `<div><label>${t.adv_fam}</label><input type="number" placeholder="0"></div>`;
+            if (isAnnual) freeHtml += `<div><label>${t.adv_pay}</label><select id="it-pagas"><option value="13">13</option><option value="14">14</option></select></div>`;
             DOM.freeOpts.innerHTML = freeHtml;
             
-            DOM.proOpts.innerHTML = `
-                <div><label>Addizionale (%)</label><input type="number" placeholder="0"></div>
-                <div><label>TFR</label><select><option>Si</option><option>No</option></select></div>
-            `;
+            DOM.proOpts.innerHTML = `<div><label>${t.adv_add}</label><input type="number" placeholder="0"></div>
+                                     <div><label>${t.adv_tfr}</label><select><option>No</option><option>Si</option></select></div>`;
         } 
         else if(state.country === 'pt') {
-            let freeHtml = `
-                <div><label>Estado Civil</label><select><option>Solteiro</option><option>Casado (1 tit)</option></select></div>
-                <div><label>Dependentes</label><input type="number" placeholder="0"></div>
-            `;
-            // PT siempre usa 14 pagas legalmente en anual, no damos opción a quitarlo.
+            let freeHtml = `<div><label>${t.adv_civ}</label><select><option>Solteiro</option><option>Casado</option></select></div>
+                            <div><label>${t.adv_dep}</label><input type="number" placeholder="0"></div>`;
+            // PT se asume 14 siempre en anual
             DOM.freeOpts.innerHTML = freeHtml;
 
-            DOM.proOpts.innerHTML = `
-                <div><label>Sub. Alimentação</label><input type="number" placeholder="Valor Dia"></div>
-                <div><label>Região</label><select><option>Continente</option><option>Açores</option></select></div>
-            `;
+            DOM.proOpts.innerHTML = `<div><label>${t.adv_sub}</label><input type="number" placeholder="0.00"></div>
+                                     <div><label>${t.adv_reg}</label><select><option>Continente</option><option>Açores</option></select></div>`;
         }
     }
 
-    // 6. ACTUALIZAR IDIOMAS
+    // 6. ACTUALIZAR IDIOMA (Traduce toda la app)
     function updateLanguage() {
         const t = i18n[state.lang];
         document.getElementById('label-salary').innerText = t.sal;
@@ -151,16 +177,25 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('lbl-res-net').innerText = t.net;
         document.getElementById('lbl-det-tax').innerText = t.tax;
         document.getElementById('lbl-det-ss').innerText = t.ss;
+        document.getElementById('lbl-pro-feat').innerText = t.feat;
+        document.getElementById('lbl-chart').innerText = t.chart;
         
+        document.getElementById('mode-normal').innerText = t.mode1;
+        document.getElementById('mode-inverse').innerText = state.isPro ? t.mode2.replace(' 🔒','') : t.mode2;
+        document.getElementById('mode-despido').innerText = state.isPro ? t.mode3.replace(' 🔒','') : t.mode3;
+        
+        document.getElementById('opt-ann').innerText = t.optAnn;
+        document.getElementById('opt-mon').innerText = t.optMon;
+        document.getElementById('opt-hou').innerText = t.optHou;
+
         let symMap = { es: '€', it: '€', pt: '€', uk: '£' };
-        DOM.currency.innerText = symMap[state.country];
-        renderAdvancedOptions();
+        document.getElementById('currency-symbol').innerText = symMap[state.country];
+        
+        renderAdvancedOptions(); // Re-renderiza para traducir etiquetas avanzadas
     }
 
     // 7. MOTOR DE CÁLCULO
     DOM.calcBtn.onclick = () => {
-        if (!state.isPro) console.log("AdMob: Intersticial ID ca-app-pub-5962342027737970/xxxxxx");
-
         const rawSal = parseFloat(document.getElementById('main-salary').value) || 0;
         const period = DOM.salaryPeriod.value;
         const hours = parseFloat(document.getElementById('hours-per-week').value) || 40;
@@ -181,7 +216,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if(country === 'es') {
             if (isAnnual) months = parseInt(document.getElementById('es-pagas')?.value || 12);
             let manualIrpf = parseFloat(document.getElementById('es-irpf')?.value);
-            
             ss = gross * 0.0647; 
             tax = !isNaN(manualIrpf) ? (gross * (manualIrpf/100)) : (gross * 0.19);
         } 
@@ -205,13 +239,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function displayResults(r) {
         const netMonth = r.net / r.months;
-        document.getElementById('res-gross').innerText = r.gross.toFixed(2) + ' ' + DOM.currency.innerText;
-        document.getElementById('res-net').innerText = netMonth.toFixed(2) + ' ' + DOM.currency.innerText;
+        const sym = document.getElementById('currency-symbol').innerText;
+        document.getElementById('res-gross').innerText = r.gross.toFixed(2) + ' ' + sym;
+        document.getElementById('res-net').innerText = netMonth.toFixed(2) + ' ' + sym;
         
         if(state.isPro && r.gross > 0) {
             DOM.proBreakdown.classList.remove('hidden');
-            document.getElementById('det-ss').innerText = (r.ss / r.months).toFixed(2);
-            document.getElementById('det-tax').innerText = (r.tax / r.months).toFixed(2);
+            document.getElementById('det-ss').innerText = (r.ss / r.months).toFixed(2) + ' ' + sym;
+            document.getElementById('det-tax').innerText = (r.tax / r.months).toFixed(2) + ' ' + sym;
 
             const total = r.net + r.tax + r.ss;
             document.getElementById('chart-net').setAttribute('stroke-dasharray', `${(r.net/total)*100}, 100`);
@@ -225,6 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 8. FUNCIONES PRO
     function unlockPro() {
         state.isPro = true;
+        localStorage.setItem('isPro', 'true');
         document.querySelectorAll('.locked, .pro-lock').forEach(el => {
             el.classList.remove('locked');
             el.classList.remove('pro-lock');
@@ -232,12 +268,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         document.getElementById('ad-banner-container').style.display = 'none';
         DOM.btnUpgrade.style.display = 'none';
-        alert("Versión PRO Desbloqueada.");
+        toggleSidebar(false);
+        alert("¡Versión PRO Desbloqueada!");
+        DOM.calcBtn.click(); // Recalcular para mostrar gráficos
     }
 
     DOM.btnUpgrade.onclick = unlockPro;
     DOM.btnRestore.onclick = unlockPro;
 
-    // Inicialización
+    // Inicialización al arrancar
+    if (state.isPro) unlockPro();
     updateLanguage();
+    // Renderiza la vista inicial según si es anual o mensual
+    DOM.salaryPeriod.dispatchEvent(new Event('change'));
 });
