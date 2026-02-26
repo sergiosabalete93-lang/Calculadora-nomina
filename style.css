@@ -1,22 +1,158 @@
-:root { --primary: #2563eb; --success: #16a34a; --bg-color: #f3f4f6; --card-bg: #ffffff; --text-main: #1f2937; --border-color: #d1d5db; }
-[data-theme="dark"] { --bg-color: #111827; --card-bg: #1f2937; --text-main: #f9fafb; --border-color: #374151; }
+/* ==========================================================================
+   VARIABLES DE TEMA (Claro / Oscuro)
+   ========================================================================== */
+:root, .theme-light {
+    --bg-main: #f4f7f6;
+    --bg-card: #ffffff;
+    --text-main: #333333;
+    --text-muted: #666666;
+    --primary-color: #0056b3;
+    --primary-hover: #004494;
+    --secondary-color: #e0e0e0;
+    --accent-pro: #d4af37; /* Dorado PRO */
+    --accent-pro-dark: #b5952f;
+    --danger-color: #dc3545;
+    --border-color: #cccccc;
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+    --shadow-md: 0 4px 8px rgba(0,0,0,0.15);
+    --transition-speed: 0.3s;
+}
 
-body { background: var(--bg-color); color: var(--text-main); font-family: sans-serif; margin: 0; }
-#app-container { max-width: 500px; margin: 0 auto; padding: 15px; }
+.theme-dark {
+    --bg-main: #121212;
+    --bg-card: #1e1e1e;
+    --text-main: #f0f0f0;
+    --text-muted: #aaaaaa;
+    --primary-color: #4da3ff;
+    --primary-hover: #1a8cff;
+    --secondary-color: #333333;
+    --accent-pro: #f1c40f;
+    --accent-pro-dark: #d4ac0d;
+    --danger-color: #ff4d4d;
+    --border-color: #444444;
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.5);
+    --shadow-md: 0 4px 8px rgba(0,0,0,0.6);
+}
 
-.sidebar { position: fixed; top: 0; right: -300px; width: 280px; height: 100%; background: var(--card-bg); z-index: 2000; transition: 0.3s; padding: 20px; box-shadow: -2px 0 10px rgba(0,0,0,0.2); }
-.sidebar.open { right: 0; }
-.overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1999; }
-.hidden { display: none !important; }
+/* ==========================================================================
+   RESET Y ESTILOS GLOBALES
+   ========================================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
 
-.card { background: var(--card-bg); border-radius: 12px; padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-.input-wrapper { display: flex; align-items: center; border: 1px solid var(--border-color); border-radius: 8px; padding: 5px 10px; background: var(--bg-color); }
-.input-wrapper input { border: none; background: transparent; font-size: 1.2rem; width: 100%; color: var(--text-main); }
+body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    transition: background-color var(--transition-speed), color var(--transition-speed);
+    overflow-x: hidden;
+}
 
-.options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding-top: 10px; }
-.btn-calculate { width: 100%; padding: 15px; background: var(--success); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 15px; }
-.btn-gold { background: linear-gradient(to right, #f59e0b, #d97706); border: none; padding: 12px; color: white; border-radius: 8px; font-weight: bold; width: 100%; }
-.mode-selector { display: flex; gap: 5px; margin-bottom: 15px; }
-.mode-btn { flex: 1; padding: 10px; border: none; border-radius: 8px; background: var(--card-bg); color: var(--text-main); cursor: pointer; font-size: 0.8rem; }
-.mode-btn.active { background: var(--primary); color: white; }
-.locked { opacity: 0.4; pointer-events: none; }
+.hidden {
+    display: none !important;
+}
+
+/* ==========================================================================
+   CABECERA PRINCIPAL (Header)
+   ========================================================================== */
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--primary-color);
+    color: #ffffff;
+    padding: 15px 20px;
+    box-shadow: var(--shadow-sm);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.titles-wrapper {
+    flex-grow: 1;
+}
+
+.app-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: 1px;
+}
+
+.gear-icon {
+    background: none;
+    border: none;
+    color: #ffffff;
+    cursor: pointer;
+    transition: transform var(--transition-speed);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.gear-icon:active {
+    transform: rotate(45deg);
+}
+
+/* ==========================================================================
+   MENÚ DE AJUSTES (Settings Panel)
+   ========================================================================== */
+.settings-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 300px;
+    height: 100vh;
+    background-color: var(--bg-card);
+    box-shadow: -5px 0 15px rgba(0,0,0,0.2);
+    z-index: 1000;
+    transform: translateX(100%);
+    transition: transform var(--transition-speed) ease-in-out;
+    overflow-y: auto;
+}
+
+.settings-panel.open {
+    transform: translateX(0);
+}
+
+.settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: var(--primary-color);
+    color: #ffffff;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: #ffffff;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.settings-content {
+    padding: 20px;
+}
+
+.setting-group {
+    margin-bottom: 20px;
+}
+
+.setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.settings-divider {
+    border: 0;
+    height: 1px;
+    background-color: var(--border-color);
+    margin: 20px 0;
+}
