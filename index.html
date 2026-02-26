@@ -3,97 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Payroll Pro Global</title>
-    <link rel="stylesheet" href="./style.css">
-</head>
-<body data-theme="light">
-    <div id="settings-sidebar" class="sidebar">
-        <div class="sidebar-header">
-            <h3 id="lbl-settings">Ajustes</h3>
-            <button id="close-settings" class="icon-btn">✕</button>
-        </div>
-        <div class="sidebar-content">
-            <label id="lbl-lang">Idioma:</label>
-            <select id="lang-selector">
-                <option value="es">Español</option>
-                <option value="en">English</option>
-                <option value="it">Italiano</option>
-                <option value="pt">Português</option>
-            </select>
-            <hr>
-            <button id="btn-upgrade" class="btn-primary btn-gold">⭐ Hacerme PRO</button>
-            <button id="btn-restore" class="btn-secondary" style="margin-top:10px;">Restaurar Compra</button>
-        </div>
-    </div>
-    <div id="sidebar-overlay" class="overlay hidden"></div>
+    <title>Payroll Pro</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    </head>
+<body class="theme-light">
 
-    <div id="app-container">
-        <header>
-            <div class="top-bar">
-                <button id="theme-toggle" class="icon-btn">🌓</button>
-                <h1>Payroll Pro <span>Global</span></h1>
-                <button id="open-settings" class="icon-btn">⚙️</button>
-            </div>
-            <select id="country-selector">
-                <option value="es">España 🇪🇸</option>
-                <option value="uk">United Kingdom 🇬🇧</option>
-                <option value="it">Italia 🇮🇹</option>
-                <option value="pt">Portugal 🇵🇹</option>
-            </select>
-        </header>
+    <div id="ad-banner-top" class="ads-container"></div>
 
-        <main>
-            <div class="mode-selector">
-                <button class="mode-btn active" data-mode="normal" id="mode-normal">Nómina</button>
-                <button class="mode-btn pro-lock" data-mode="inverse" id="mode-inverse">Neto > Bruto 🔒</button>
-                <button class="mode-btn pro-lock" data-mode="despido" id="mode-despido">Despido 🔒</button>
+    <header id="main-header" class="header-container">
+        <div id="app-titles" class="titles-wrapper">
+            <h1 id="title-en" class="app-title active">Payroll Pro</h1>
+            <h1 id="title-es" class="app-title hidden">Nóminas</h1>
+            <h1 id="title-pt" class="app-title hidden">Nómina</h1>
+            <h1 id="title-it" class="app-title hidden">Nómina</h1>
+        </div>
+        <button id="btn-settings" class="gear-icon" aria-label="Ajustes">
+            <svg viewBox="0 0 24 24" width="28" height="28"><path fill="currentColor" d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>
+        </button>
+    </header>
+
+    <aside id="settings-menu" class="settings-panel hidden">
+        <div class="settings-header">
+            <h2 id="settings-title">Ajustes</h2>
+            <button id="btn-close-settings" class="close-btn">✖</button>
+        </div>
+        
+        <div class="settings-content">
+            <div class="setting-group">
+                <div class="setting-item">
+                    <label for="theme-toggle">Modo Oscuro</label>
+                    <input type="checkbox" id="theme-toggle" class="toggle-switch">
+                </div>
+                <div class="setting-item">
+                    <label for="lang-select">Idioma / Language</label>
+                    <select id="lang-select" class="dropdown-select">
+                        <option value="es">Español</option>
+                        <option value="en">English</option>
+                        <option value="it">Italiano</option>
+                        <option value="pt">Português</option>
+                    </select>
+                </div>
             </div>
 
-            <section class="card">
+            <hr class="settings-divider">
+
+            <div id="pro-upgrade-container" class="setting-group">
+                <button id="btn-become-pro" class="btn-primary-action">Hacerse PRO</button>
+            </div>
+
+            <div id="pro-settings-container" class="setting-group hidden">
+                <h3 class="pro-title">Ajustes PRO</h3>
+                <button id="btn-change-currency" class="btn-secondary">Cambiar Moneda</button>
+                <button id="btn-change-email" class="btn-secondary">Cambiar Email</button>
+                <button id="btn-restore-settings" class="btn-secondary">Restaurar Ajustes</button>
+                <button id="btn-undo-pro" class="btn-danger">Deshacer PRO</button>
+            </div>
+
+            <hr class="settings-divider">
+
+            <div id="auth-container" class="setting-group">
+                <h3>Inicio Sesión PRO</h3>
+                <input type="email" id="auth-email" class="input-field" placeholder="Correo electrónico">
+                <input type="password" id="auth-password" class="input-field" placeholder="Contraseña">
+                <button id="btn-login" class="btn-primary-action">Iniciar Sesión</button>
+                <button id="btn-register" class="btn-secondary">Registrarse</button>
+            </div>
+
+            <hr class="settings-divider">
+
+            <div id="legal-container" class="setting-group legal-links">
+                <a href="#privacy" id="link-privacy">Política de Privacidad</a>
+                <a href="#terms" id="link-terms">Términos de Servicio</a>
+            </div>
+        </div>
+    </aside>
+
+    <main id="app-main-content">
+                <section id="country-selection" class="selection-section">
+            <h2 id="label-country" class="section-title">País / Country</h2>
+            <div class="button-group country-buttons">
+                <button id="btn-spain" class="btn-country active">España</button>
+                <button id="btn-uk" class="btn-country">UK</button>
+                <button id="btn-italy" class="btn-country disabled" disabled>
+                    Italia <span class="badge-soon">Próximamente</span>
+                </button>
+                <button id="btn-portugal" class="btn-country disabled" disabled>
+                    Portugal <span class="badge-soon">Próximamente</span>
+                </button>
+            </div>
+            
+            <h2 id="label-mode" class="section-title">Modo / Mode</h2>
+            <div class="button-group mode-buttons">
+                <button id="btn-mode-annual" class="btn-mode active">Anual</button>
+                <button id="btn-mode-monthly" class="btn-mode">Mensual</button>
+                <button id="btn-mode-hourly" class="btn-mode">Por Horas</button>
+                <button id="btn-mode-dismissal" class="btn-mode pro-feature hidden">Despido <span class="pro-badge">PRO</span></button>
+                <button id="btn-mode-inverse" class="btn-mode pro-feature hidden">Inverso <span class="pro-badge">PRO</span></button>
+            </div>
+        </section>
+
+        <section id="module-spain" class="country-module active">
+            
+            <div id="spain-annual" class="calc-form active">
                 <div class="input-group">
-                    <div class="flex-label">
-                        <label id="label-salary">Sueldo</label>
-                        <select id="salary-period">
-                            <option value="annual">Anual</option>
-                            <option value="monthly">Mensual</option>
-                            <option value="hourly">Por Hora</option>
-                        </select>
-                    </div>
-                    <div class="input-wrapper">
-                        <span class="currency-symbol" id="currency-symbol">€</span>
-                        <input type="number" id="main-salary" placeholder="0.00">
-                    </div>
+                    <label for="sp-annual-gross">Importe Bruto Anual (€)</label>
+                    <input type="number" id="sp-annual-gross" class="input-field" placeholder="Ej: 24000">
                 </div>
-
-                <div id="hourly-config" class="hidden" style="margin-top:15px;">
-                    <label id="lbl-hours" style="font-weight:bold; display:block; margin-bottom:5px;">Horas Semanales:</label>
-                    <input type="number" id="hours-per-week" value="40" class="full-input">
+                <div class="input-group">
+                    <label for="sp-annual-months">Pagas</label>
+                    <select id="sp-annual-months" class="dropdown-select">
+                        <option value="12">12 Pagas</option>
+                        <option value="14">14 Pagas</option>
+                    </select>
                 </div>
+            </div>
 
-                <div id="advanced-options-container" style="margin-top:15px;">
-                    <details open>
-                        <summary id="lbl-adv-config" style="font-weight:bold; cursor:pointer; color:var(--primary);">⚙️ Configuración Avanzada</summary>
-                        <div id="free-options" class="options-grid"></div>
-                        <div class="pro-divider"><span class="pro-badge">PRO</span> <span id="lbl-pro-feat">Extras</span></div>
-                        <div id="pro-options" class="options-grid locked"></div>
-                    </details>
+            <div id="spain-monthly" class="calc-form hidden">
+                <div class="input-group">
+                    <label for="sp-monthly-gross">Importe Bruto Mensual (€)</label>
+                    <input type="number" id="sp-monthly-gross" class="input-field" placeholder="Ej: 2000">
                 </div>
-
-                <button id="calc-trigger-btn" class="btn-calculate">CALCULAR</button>
-            </section>
-
-            <section class="card result-card">
-                <div id="results-display">
-                    <div class="res-row"><span id="lbl-res-gross">Bruto:</span> <strong id="res-gross">0.00</strong></div>
-                    <div class="res-row highlight"><span id="lbl-res-net">Neto Mensual:</span> <strong id="res-net">0.00</strong></div>
-                    <div id="pro-breakdown" class="hidden">
-                        <div class="res-row secondary"><span>Seg. Social:</span> <strong id="det-ss">0.00</strong></div>
-                        <div class="res-row secondary"><span>Impuestos:</span> <strong id="det-tax">0.00</strong></div>
-                    </div>
+                <div class="input-group toggle-group">
+                    <label for="sp-monthly-prorated">Paga Extra Prorrateada</label>
+                    <input type="checkbox" id="sp-monthly-prorated" class="toggle-switch">
                 </div>
-            </section>
-        </main>
-    </div>
-    <script src="./app.js"></script>
-</body>
-</html>
+            </div>
+
+            <div id="spain-hourly" class="calc-form hidden">
+                <div class="input-group">
+                    <label for="sp-hourly-price">Precio por Hora (€)</label>
+                    <input type="number" id="sp-hourly-price" class="input-field" placeholder="Ej: 10.50">
+                </div>
+                <div class="input-group">
+                    <label for="sp-hourly-hours">Número de Horas</label>
+                    <input type="number" id="sp-hourly-hours" class="input-field" placeholder="Ej: 8">
+                </div>
+                <div class="input-group">
+                    <label for="sp-hourly-days">Número de Días</label>
+                    <input type="number" id="sp-hourly-days" class="input-field" placeholder="Ej: 20">
+                </div>
+            </div>
+
+            <div id="spain-dismissal" class="calc-form pro-feature hidden">
+                <div class="input-group">
+                    <label for="sp-dismissal-years">Años Trabajados</label>
+                    <input type="number" id="sp-dismissal-years" class="input-field" placeholder="Ej: 5">
+                </div>
+                <div class="input-group">
+                    <label for="sp-dismissal-type">Tipo de Despido</label>
+                    <select id="sp-dismissal-type" class="dropdown-select">
+                        <option value="objective">Objetivo (20 días/año)</option>
+                        <option value="unfair">Improcedente (33 días/año)</option>
+                    </select>
+                </div>
+            </div>
