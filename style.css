@@ -156,3 +156,432 @@ body {
     background-color: var(--border-color);
     margin: 20px 0;
 }
+/* ==========================================================================
+   COMPONENTES DE SELECCIÓN (País y Modo)
+   ========================================================================== */
+.selection-section {
+    padding: 20px;
+    background-color: var(--bg-card);
+    margin: 10px;
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+}
+
+.section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.button-group {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.btn-country, .btn-mode {
+    padding: 12px 8px;
+    border: 2px solid var(--secondary-color);
+    background-color: var(--bg-card);
+    color: var(--text-main);
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-speed);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+}
+
+.btn-country.active, .btn-mode.active {
+    border-color: var(--primary-color);
+    background-color: var(--primary-color);
+    color: #ffffff;
+}
+
+/* ESTADOS DESACTIVADOS (Italia / Portugal) */
+.btn-country.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    filter: grayscale(1);
+}
+
+.badge-soon {
+    font-size: 0.7rem;
+    background-color: var(--danger-color);
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-top: 4px;
+}
+
+/* ETIQUETAS PRO EN BOTONES */
+.pro-badge {
+    font-size: 0.65rem;
+    background-color: var(--accent-pro);
+    color: #000;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-weight: 800;
+    margin-top: 3px;
+}
+
+/* ==========================================================================
+   FORMULARIOS DE ENTRADA (Inputs)
+   ========================================================================== */
+.country-module {
+    padding: 10px 20px;
+}
+
+.input-group {
+    margin-bottom: 18px;
+    display: flex;
+    flex-direction: column;
+}
+
+.input-group label {
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+
+.input-field {
+    padding: 12px 15px;
+    border: 1.5px solid var(--border-color);
+    border-radius: 8px;
+    background-color: var(--bg-card);
+    color: var(--text-main);
+    font-size: 1rem;
+    outline: none;
+    transition: border-color var(--transition-speed);
+}
+
+.input-field:focus {
+    border-color: var(--primary-color);
+}
+
+.dropdown-select {
+    padding: 12px;
+    border: 1.5px solid var(--border-color);
+    border-radius: 8px;
+    background-color: var(--bg-card);
+    color: var(--text-main);
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+/* INTERFAZ PARA MULTI-INPUT (Ej: Extras val x Cantidad) */
+.multi-input {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+/* ==========================================================================
+   CONFIGURACIÓN AVANZADA (Details & Summary)
+   ========================================================================== */
+.advanced-settings {
+    background-color: var(--secondary-color);
+    border-radius: 8px;
+    margin-top: 15px;
+    padding: 10px;
+    transition: all var(--transition-speed);
+}
+
+.advanced-settings summary {
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--primary-color);
+    outline: none;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.advanced-settings summary::after {
+    content: '▼';
+    font-size: 0.8rem;
+}
+
+.advanced-settings[open] summary::after {
+    content: '▲';
+}
+
+.advanced-content {
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border-color);
+}
+
+/* ==========================================================================
+   INTERRUPTORES (Toggle Switches)
+   ========================================================================== */
+.toggle-group {
+    flex-direction: row !important;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.toggle-switch {
+    appearance: none;
+    width: 45px;
+    height: 24px;
+    background-color: #ccc;
+    border-radius: 12px;
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.toggle-switch::before {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: white;
+    border-radius: 50%;
+    top: 2px;
+    left: 2px;
+    transition: transform 0.3s;
+}
+
+.toggle-switch:checked {
+    background-color: var(--primary-color);
+}
+
+.toggle-switch:checked::before {
+    transform: translateX(21px);
+}
+
+/* ==========================================================================
+   BOTONES Y ACCIONES
+   ========================================================================== */
+.action-container {
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.btn-calculate-main {
+    width: 100%;
+    max-width: 400px;
+    padding: 16px;
+    background-color: var(--primary-color);
+    color: #ffffff;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    cursor: pointer;
+    box-shadow: var(--shadow-md);
+    transition: transform 0.1s, background-color 0.3s;
+}
+
+.btn-calculate-main:active {
+    transform: scale(0.98);
+}
+
+.btn-primary-action {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.btn-secondary {
+    width: 100%;
+    padding: 10px;
+    background-color: var(--secondary-color);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    cursor: pointer;
+}
+
+.btn-danger {
+    width: 100%;
+    padding: 10px;
+    background-color: var(--danger-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* ==========================================================================
+   ESTILOS PARA FUNCIONES PRO (Visualización Básica)
+   ========================================================================== */
+.pro-fields-wrapper {
+    background-color: rgba(0, 0, 0, 0.05);
+    padding: 10px;
+    border-radius: 8px;
+    margin-top: 10px;
+}
+
+.pro-item {
+    opacity: 0.6; /* Color más oscuro/apagado solicitado */
+    filter: grayscale(0.5);
+    pointer-events: none; /* Bloqueado en versión básica */
+    position: relative;
+}
+
+.pro-item::after {
+    content: '🔒 PRO';
+    position: absolute;
+    right: 0;
+    top: 0;
+    font-size: 0.7rem;
+    color: var(--accent-pro-dark);
+    font-weight: bold;
+}
+
+/* Cuando el usuario es PRO, removemos el bloqueo vía JS */
+body.is-pro .pro-item {
+    opacity: 1;
+    filter: none;
+    pointer-events: auto;
+}
+/* ==========================================================================
+   DESGLOSE DE RESULTADOS (Results Display)
+   ========================================================================== */
+.results-container {
+    margin: 20px 10px;
+    padding: 25px;
+    background-color: var(--bg-card);
+    border-radius: 15px;
+    box-shadow: var(--shadow-md);
+    border: 2px solid var(--primary-color);
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.results-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.result-item {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed var(--border-color);
+    font-size: 0.95rem;
+}
+
+.result-value {
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.net-total-wrapper {
+    text-align: center;
+    padding: 20px;
+    background-color: var(--primary-color);
+    color: #ffffff;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+
+#label-net-total {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.net-amount {
+    font-size: 2.2rem; /* Importe neto en grande */
+    font-weight: 900;
+}
+
+/* ==========================================================================
+   MÓDULO PRÓXIMAMENTE (Obras)
+   ========================================================================== */
+.coming-soon-content {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.img-construction {
+    width: 150px;
+    height: auto;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.1));
+}
+
+/* ==========================================================================
+   CONTENEDORES DE PUBLICIDAD
+   ========================================================================== */
+.ads-container {
+    width: 100%;
+    min-height: 50px;
+    background-color: rgba(0,0,0,0.03);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10px 0;
+    overflow: hidden;
+}
+
+/* ==========================================================================
+   PIE DE PÁGINA (Footer)
+   ========================================================================== */
+.main-footer {
+    text-align: center;
+    padding: 30px 10px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* ==========================================================================
+   LOADER (Animación de Cálculo)
+   ========================================================================== */
+.loader {
+    border: 4px solid var(--secondary-color);
+    border-top: 4px solid var(--primary-color);
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ==========================================================================
+   DISEÑO ADAPTATIVO (Media Queries)
+   ========================================================================== */
+@media (min-width: 600px) {
+    .button-group {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
+    #app-main-content {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+}
