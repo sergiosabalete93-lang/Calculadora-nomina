@@ -158,3 +158,129 @@
                     </select>
                 </div>
             </div>
+            <details id="spain-advanced" class="advanced-settings">
+                <summary>Configuración Avanzada</summary>
+                <div class="advanced-content">
+                    <div class="input-group">
+                        <label for="sp-irpf-manual">Ajustar IRPF Manual (%)</label>
+                        <input type="number" id="sp-irpf-manual" class="input-field" placeholder="Ej: 15">
+                    </div>
+                    <div class="pro-fields-wrapper">
+                        <div class="input-group pro-item">
+                            <label for="sp-pro-ss">Añadir Seg. Social Extra (€)</label>
+                            <input type="number" id="sp-pro-ss" class="input-field pro-input" placeholder="0.00">
+                        </div>
+                        <div class="input-group pro-item">
+                            <label for="sp-pro-extras">Extras / Bonus (€)</label>
+                            <div class="multi-input">
+                                <input type="number" id="sp-pro-extras-val" class="input-field pro-input" placeholder="Cantidad">
+                                <input type="number" id="sp-pro-extras-mul" class="input-field pro-input" placeholder="x1">
+                            </div>
+                        </div>
+                        <div class="input-group pro-item">
+                            <label for="sp-pro-km">Kilometraje (€)</label>
+                            <div class="multi-input">
+                                <input type="number" id="sp-pro-km-val" class="input-field pro-input" placeholder="Precio/km">
+                                <input type="number" id="sp-pro-km-total" class="input-field pro-input" placeholder="Total km">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </details>
+        </section>
+
+        <section id="module-uk" class="country-module hidden">
+            
+            <div id="uk-annual" class="calc-form active">
+                <div class="input-group">
+                    <label for="uk-annual-gross">Gross Annual Salary (£)</label>
+                    <input type="number" id="uk-annual-gross" class="input-field" placeholder="Ej: 30000">
+                </div>
+            </div>
+
+            <div id="uk-monthly" class="calc-form hidden">
+                <div class="input-group">
+                    <label for="uk-monthly-gross">Monthly Gross Pay (£)</label>
+                    <input type="number" id="uk-monthly-gross" class="input-field" placeholder="Ej: 2500">
+                </div>
+                <div class="input-group">
+                    <label for="uk-pay-period">Pay Period (1-12)</label>
+                    <input type="number" id="uk-pay-period" min="1" max="12" class="input-field" placeholder="Month number">
+                </div>
+            </div>
+
+            <div id="uk-hourly" class="calc-form hidden">
+                <div class="input-group">
+                    <label for="uk-hourly-rate">Hourly Rate (£)</label>
+                    <input type="number" id="uk-hourly-rate" class="input-field" placeholder="Ej: 12">
+                </div>
+                <div class="input-group">
+                    <label for="uk-hourly-hours">Hours</label>
+                    <input type="number" id="uk-hourly-hours" class="input-field" placeholder="Hours per week">
+                </div>
+                <div class="input-group">
+                    <label for="uk-hourly-days">Days (Optional)</label>
+                    <input type="number" id="uk-hourly-days" class="input-field" placeholder="Days per week">
+                </div>
+            </div>
+
+            <details id="uk-advanced" class="advanced-settings">
+                <summary>Advanced Settings / Configuración</summary>
+                <div class="advanced-content">
+                    <div class="input-group toggle-group">
+                        <label for="uk-dual-job">Double Employment / Doble Empleo</label>
+                        <input type="checkbox" id="uk-dual-job" class="toggle-switch">
+                    </div>
+                    <div class="pro-fields-wrapper">
+                        <div class="input-group pro-item">
+                            <label for="uk-pro-taxcode">Tax Code</label>
+                            <input type="text" id="uk-pro-taxcode" class="input-field pro-input" placeholder="Ej: 1257L">
+                        </div>
+                        <div class="input-group pro-item">
+                            <label for="uk-pro-pension">Pension Contribution (%)</label>
+                            <input type="number" id="uk-pro-pension" class="input-field pro-input" placeholder="Ej: 5">
+                        </div>
+                    </div>
+                </div>
+            </details>
+        </section>
+
+        <div class="action-container">
+            <button id="btn-calculate" class="btn-calculate-main">CALCULAR</button>
+        </div>
+                <section id="results-section" class="results-container hidden">
+            <div id="results-loader" class="loader hidden"></div>
+            
+            <div id="results-content">
+                <h2 id="label-summary" class="section-title">Resumen / Summary</h2>
+                
+                <div id="results-list" class="results-grid">
+                    </div>
+
+                <div class="net-total-wrapper">
+                    <span id="label-net-total">IMPORTE NETO</span>
+                    <div id="net-result-value" class="net-amount">0.00</div>
+                </div>
+            </div>
+        </section>
+
+        <div id="ad-interstitial-placeholder" class="ads-container"></div>
+
+        <section id="module-coming-soon" class="country-module hidden">
+            <div class="coming-soon-content">
+                <img src="assets/under-construction.png" alt="Obras" class="img-construction">
+                <h2 id="text-coming-soon">Próximamente / Coming Soon</h2>
+                <p>Estamos trabajando para incluir la legislación de este país.</p>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="main-footer">
+        <p>&copy; 2026 Payroll Pro - Smart Calculations</p>
+    </footer>
+
+    <script src="app.js" defer></script>
+    <script src="ads/ads-engine.js" defer></script>
+</body>
+</html>
