@@ -424,3 +424,12 @@ function activateProMode(email) {
     document.getElementById('btn-settings').innerHTML = "⚙️ PRO"; 
     alert("¡Payroll Pro activado para: " + email + "!");
 }
+// REPARACIÓN MANUAL DEL BOTÓN AJUSTES
+document.getElementById('btn-settings').addEventListener('click', () => {
+    // Ocultamos todas las pantallas primero
+    document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+    // Mostramos la de ajustes
+    document.getElementById('settings-screen').classList.remove('hidden');
+    // Marcamos el botón como activo si quieres
+    console.log("Cambiando a pantalla de ajustes...");
+});
