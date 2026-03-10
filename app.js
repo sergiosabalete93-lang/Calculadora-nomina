@@ -1,147 +1,152 @@
-const appState = {
+/* ==========================================================================
+   CONFIGURACIÓN Y ESTADO
+   ========================================================================== */
+const state = { 
+    country: 'spain', 
     isPro: false,
-    currentCountry: 'spain', 
-    currentMode: 'annual',
-    ukRegion: 'rUK',         
-    includeHolidayPay: false 
+    currency: '€'
 };
 
 const DOM = {
     screens: document.querySelectorAll('.screen'),
-    navButtons: document.querySelectorAll('.nav-btn'),
-    calculateBtn: document.getElementById('btn-calculate'),
-    resultsList: document.getElementById('results-list'),
-    netResultValue: document.getElementById('net-result-value'),
-    btnSettings: document.getElementById('btn-settings'),
-    btnBack: document.querySelectorAll('.btn-back'),
-    screenMain: document.getElementById('main-screen'),
-    screenSettings: document.getElementById('settings-screen')
+    navBtns: document.querySelectorAll('.nav-btn'),
+    forms: document.querySelectorAll('.country-form'),
+    calcBtn: document.getElementById('btn-calculate'),
+    resList: document.getElementById('results-list'),
+    resNet: document.getElementById('net-result-value'),
+    btnSet: document.getElementById('btn-settings'),
+    btnBack: document.querySelectorAll('.btn-back')
 };
 
-function showScreen(screenId) {
+/* ==========================================================================
+   NAVEGACIÓN (CORREGIDA)
+   ========================================================================== */
+function showScreen(id) {
     DOM.screens.forEach(s => s.classList.add('hidden'));
-    const target = document.getElementById(screenId);
-    if (target) {
-        target.classList.remove('hidden');
-        window.scrollTo(0, 0);
-    }
+    const target = document.getElementById(id);
+    if (target) target.classList.remove('hidden');
 }
 
-function setupNavigation() {
-    DOM.navButtons.forEach(btn => {
+function initNavigation() {
+    DOM.navBtns.forEach(btn => {
         btn.addEventListener('click', () => {
-            const country = btn.getAttribute('data-country');
-            DOM.navButtons.forEach(b => b.classList.remove('active'));
+            state.country = btn.getAttribute('data-country');
+            state.currency = (state.country === 'spain') ? '€' : '£';
+            
+            DOM.navBtns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            document.querySelectorAll('.country-form').forEach(form => form.classList.add('hidden'));
-            const targetForm = document.getElementById(`form-${country}`);
-            if (targetForm) {
-                targetForm.classList.remove('hidden');
-                appState.currentCountry = country;
-            }
+            
+            DOM.forms.forEach(f => f.classList.add('hidden'));
+            document.getElementById(`form-${state.country}`).classList.remove('hidden');
+            
             showScreen('main-screen');
+            clearResults();
         });
     });
 
-    if (DOM.btnSettings) {
-        DOM.btnSettings.addEventListener('click', () => {
-            showScreen('settings-screen');
-        });
-    }
-
-    if (DOM.btnBack) {
-        DOM.btnBack.forEach(btn => {
-            btn.addEventListener('click', () => showScreen('main-screen'));
-        });
-function initCalculator() {
-    if (!DOM.calculateBtn) return;
-    DOM.calculateBtn.addEventListener('click', () => {
-        DOM.resultsList.innerHTML = '';
-        DOM.calculateBtn.innerText = "Calculando...";
-        DOM.calculateBtn.disabled = true;
-        setTimeout(() => {
-            executeCalculation();
-            DOM.calculateBtn.innerText = "CALCULAR";
-            DOM.calculateBtn.disabled = false;
-        }, 500);
-    });
+    if (DOM.btnSet) DOM.btnSet.addEventListener('click', () => showScreen('settings-screen'));
+    DOM.btnBack.forEach(b => b.addEventListener('click', () => showScreen('main-screen')));
 }
 
-function executeCalculation() {
-    if (appState.currentCountry === 'spain') {
-        calculateSpain();
-    } else if (appState.currentCountry === 'uk') {
-        calculateUK();
-    }
+function clearResults() {
+    DOM.resList.innerHTML = "";
+    DOM.resNet.textContent = "0.00" + state.currency;
 }
 
+/* ==========================================================================
+   MOTOR DE CÁLCULO (SINCRONIZADO)
+   ========================================================================== */
+function handleCalculation() {
+    DOM.resList.innerHTML = "";
+    if (state.country === 'spain') calculateSpain();
+    else calculateUK();
+}
+
+// --- LÓGICA ESPAÑA ---
 function calculateSpain() {
-    let gross = parseFloat(document.getElementById('sp-annual-gross').value) || 0;
-    let irpfPerc = parseFloat(document.getElementById('sp-irpf-manual').value) || 0;
-    const ssPerc = 6.35;
-
-    if (irpfPerc === 0) {
-        if (gross <= 12450) irpfPerc = 19;
-        else if (gross <= 20200) irpfPerc = 24;
-        else if (gross <= 35200) irpfPerc = 30;
-        else if (gross <= 60000) irpfPerc = 37;
-        else irpfPerc = 45;
-    }
-
-    let ssAmount = gross * (ssPerc / 100);
-    let irpfAmount = gross * (irpfPerc / 100);
-    let netAnnual = gross - ssAmount - irpfAmount;
-
-    renderResult("Seguridad Social", "-" + (ssAmount / 12).toFixed(2) + "€");
-    renderResult("Retención IRPF", "-" + (irpfAmount / 12).toFixed(2) + "€");
-    DOM.netResultValue.textContent = (netAnnual / 12).toFixed(2) + "€";
-}
-function calculateUK() {
-    let gross = parseFloat(document.getElementById('uk-annual-gross').value) || 0;
+    let grossInput = parseFloat(document.getElementById('sp-annual-gross').value) || 0;
+    let irpfManual = parseFloat(document.getElementById('sp-irpf-manual').value) || 0;
     
-    if (appState.includeHolidayPay) {
-        let holidayPay = gross * 0.1207;
-        renderResult("Holiday Pay (12.07%)", "£" + (holidayPay / 12).toFixed(2));
-        gross += holidayPay;
+    // Asumimos siempre entrada anual por ahora para evitar errores de usuario
+    let annualGross = grossInput; 
+
+    // Tramos IRPF España 2024/2025
+    let irpfPerc = irpfManual;
+    if (irpfPerc === 0) {
+        if (annualGross <= 12450) irpfPerc = 19;
+        else if (annualGross <= 20200) irpfPerc = 24;
+        else if (annualGross <= 35200) irpfPerc = 30;
+        else if (annualGross <= 60000) irpfPerc = 37;
+        else if (annualGross <= 300000) irpfPerc = 45;
+        else irpfPerc = 47;
     }
 
-    let tax = 0;
-    let allowance = 12570;
-    let taxable = Math.max(0, gross - allowance);
+    let ssAnnual = annualGross * 0.0635; 
+    let irpfAnnual = annualGross * (irpfPerc / 100);
+    let netAnnual = annualGross - ssAnnual - irpfAnnual;
 
-    if (appState.ukRegion === 'SCO') {
+    // Resultados (Base 12 pagas estándar)
+    renderDetail("Seguridad Social (6.35%)", "-" + (ssAnnual/12).toFixed(2) + "€");
+    renderDetail("IRPF (" + irpfPerc + "%)", "-" + (irpfAnnual/12).toFixed(2) + "€");
+    DOM.resNet.textContent = (netAnnual / 12).toFixed(2) + "€";
+}
+
+// --- LÓGICA REINO UNIDO ---
+function calculateUK() {
+    let grossInput = parseFloat(document.getElementById('uk-annual-gross').value) || 0;
+    const region = document.getElementById('uk-region-select').value;
+    const hasHolidayPay = document.getElementById('uk-holiday-pay').checked;
+
+    let annualGross = grossInput;
+
+    // 1. Holiday Pay (Prorrata)
+    if (hasHolidayPay) {
+        let hp = annualGross * 0.1207;
+        renderDetail("Holiday Pay (12.07%)", "+£" + (hp/12).toFixed(2));
+        annualGross += hp;
+    }
+
+    // 2. Personal Allowance
+    let taxable = Math.max(0, annualGross - 12570);
+    let tax = 0;
+
+    // 3. Tax Bands (Bifurcación)
+    if (region === 'SCO') {
         if (taxable > 0) tax += Math.min(taxable, 2306) * 0.19;
         if (taxable > 2306) tax += Math.min(taxable - 2306, 11619) * 0.20;
         if (taxable > 13925) tax += Math.min(taxable - 13925, 17146) * 0.21;
         if (taxable > 31071) tax += Math.min(taxable - 31071, 31438) * 0.42;
         if (taxable > 62509) tax += Math.min(taxable - 62509, 62509) * 0.45;
         if (taxable > 125140) tax += (taxable - 125140) * 0.48;
-        renderResult("Región", "Escocia");
     } else {
         if (taxable > 0) tax += Math.min(taxable, 37700) * 0.20;
-        if (taxable > 37700) tax += Math.min(taxable - 37700, 74870) * 0.40;
+        if (taxable > 37700) tax += Math.min(taxable - 37700, 87440) * 0.40;
         if (taxable > 125140) tax += (taxable - 125140) * 0.45;
-        renderResult("Región", "Inglaterra/Gales/NI");
     }
 
-    let ni = (gross > 12570) ? (Math.min(gross, 50270) - 12570) * 0.08 : 0;
-    let netAnnual = gross - tax - ni;
+    // 4. National Insurance (NI)
+    let ni = (annualGross > 12570) ? (Math.min(annualGross, 50270) - 12570) * 0.08 : 0;
+    
+    let netMonthly = (annualGross - tax - ni) / 12;
 
-    renderResult("Income Tax", "-£" + (tax / 12).toFixed(2));
-    renderResult("National Insurance", "-£" + (ni / 12).toFixed(2));
-    DOM.netResultValue.textContent = "£" + (netAnnual / 12).toFixed(2);
+    renderDetail("Income Tax", "-£" + (tax/12).toFixed(2));
+    renderDetail("National Insurance", "-£" + (ni/12).toFixed(2));
+    DOM.resNet.textContent = "£" + netMonthly.toFixed(2);
 }
 
-function renderResult(label, value) {
+function renderDetail(label, value) {
     const div = document.createElement('div');
     div.className = 'result-item';
-    div.innerHTML = `<span>${label}:</span> <span class="result-value">${value}</span>`;
-    DOM.resultsList.appendChild(div);
+    div.innerHTML = `<span>${label}:</span> <span>${value}</span>`;
+    DOM.resList.appendChild(div);
 }
 
+/* ==========================================================================
+   INICIALIZACIÓN FINAL
+   ========================================================================== */
 document.addEventListener('DOMContentLoaded', () => {
-    setupNavigation();
-    initCalculator();
-});
+    initNavigation();
+    if (DOM.calcBtn) {
+        DOM.calcBtn.addEventListener('click', handleCalculation);
     }
-}
+});
