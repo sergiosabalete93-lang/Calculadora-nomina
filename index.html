@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Payroll Pro - Tax Calculator</title>
+    <title>Payroll Pro</title>
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
-
     <div id="app-container">
         <header>
             <div class="header-content">
@@ -21,7 +20,6 @@
         </header>
 
         <main id="main-screen" class="screen">
-            
             <div id="form-spain" class="country-form">
                 <div class="input-group">
                     <label>Salario Bruto Anual (€)</label>
@@ -29,7 +27,7 @@
                 </div>
                 <div class="input-group">
                     <label>Retención IRPF % (Opcional)</label>
-                    <input type="number" id="sp-irpf-manual" placeholder="Auto" inputmode="decimal">
+                    <input type="number" id="sp-irpf-manual" placeholder="Automático" inputmode="decimal">
                 </div>
             </div>
 
@@ -38,76 +36,51 @@
                     <label>Annual Gross Salary (£)</label>
                     <input type="number" id="uk-annual-gross" placeholder="Ej: 45000" inputmode="decimal">
                 </div>
-
                 <div class="input-group">
                     <label>Tax Region</label>
-                    <select id="uk-region-select" class="custom-select">
+                    <select id="uk-region-select">
                         <option value="rUK">England / Wales / NI</option>
-                        <option value="SCO">Scotland (6 Tax Bands)</option>
+                        <option value="SCO">Scotland (Special Bands)</option>
                     </select>
                 </div>
-
                 <div class="toggle-container">
-                    <label class="switch-label">Include Holiday Pay (12.07%)</label>
-                    <label class="switch">
-                        <input type="checkbox" id="uk-holiday-pay">
-                        <span class="slider round"></span>
-                    </label>
+                    <label>Include Holiday Pay (12.07%)</label>
+                    <input type="checkbox" id="uk-holiday-pay">
                 </div>
             </div>
+
+            <button id="btn-calculate" class="main-btn">CALCULAR</button>
+
             <div id="results-container" class="results-card">
-                <div class="net-label">SALARIO NETO ESTIMADO</div>
+                <div class="net-label">NETO MENSUAL ESTIMADO</div>
                 <div id="net-result-value" class="net-value">0.00€</div>
-                <div id="results-list" class="breakdown-list">
-                    </div>
-            </div>
-            <div id="ad-banner-container" class="ad-container">
-                <div class="ad-placeholder">Anuncio</div>
+                <div id="results-list" class="breakdown-list"></div>
             </div>
         </main>
 
         <section id="settings-screen" class="screen hidden">
             <div class="settings-header">
-                <button class="btn-back icon-btn">
-                    <span class="material-icons">arrow_back</span>
-                </button>
-                <h2>Configuración PRO</h2>
+                <button class="btn-back icon-btn"><span class="material-icons">arrow_back</span></button>
+                <h2>Ajustes</h2>
             </div>
-            
             <div class="settings-content">
                 <div class="pro-card">
-                    <span class="material-icons gold-text">workspace_premium</span>
-                    <h3>Acceso Ilimitado</h3>
-                    <p>Desbloquea historial de cálculos y exportación en PDF.</p>
-                    <button class="gold-btn">DESBLOQUEAR PRO</button>
-                </div>
-
-                <div class="setting-item">
-                    <span>Moneda Principal</span>
-                    <select id="currency-pref">
-                        <option value="EUR">Euro (€)</option>
-                        <option value="GBP">Pound (£)</option>
-                    </select>
+                    <h3>Versión PRO</h3>
+                    <p>Desbloquea todas las funciones avanzadas.</p>
+                    <button class="gold-btn">DESBLOQUEAR</button>
                 </div>
             </div>
         </section>
 
         <nav id="bottom-nav">
             <button class="nav-btn active" data-country="spain">
-                <img src="https://flagcdn.com/w40/es.png" alt="España">
-                <span>España</span>
+                <img src="https://flagcdn.com/w40/es.png" width="24"> <span>España</span>
             </button>
             <button class="nav-btn" data-country="uk">
-                <img src="https://flagcdn.com/w40/gb.png" alt="UK">
-                <span>UK</span>
+                <img src="https://flagcdn.com/w40/gb.png" width="24"> <span>UK</span>
             </button>
         </nav>
     </div>
-
-    <script src="firebase-config.js"></script>
-    <script src="ads/ads-engine.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
-
-            <button id="btn-calculate" class="main-btn">CALCULAR</button>
