@@ -3,284 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Payroll Pro</title>
+    <title>Payroll Pro - Tax Calculator</title>
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
-    </head>
-<body class="theme-light">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
 
-    <div id="ad-banner-top" class="ads-container"></div>
-
-    <header id="main-header" class="header-container">
-        <div id="app-titles" class="titles-wrapper">
-            <h1 id="title-en" class="app-title active">Payroll Pro</h1>
-            <h1 id="title-es" class="app-title hidden">Nóminas</h1>
-            <h1 id="title-pt" class="app-title hidden">Nómina</h1>
-            <h1 id="title-it" class="app-title hidden">Nómina</h1>
-        </div>
-        <button id="btn-settings" class="gear-icon" aria-label="Ajustes">
-            <svg viewBox="0 0 24 24" width="28" height="28"><path fill="currentColor" d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>
-        </button>
-    </header>
-
-    <aside id="settings-menu" class="settings-panel hidden">
-        <div class="settings-header">
-            <h2 id="settings-title">Ajustes</h2>
-            <button id="btn-close-settings" class="close-btn">✖</button>
-        </div>
-        
-        <div class="settings-content">
-            <div class="setting-group">
-                <div class="setting-item">
-                    <label for="theme-toggle">Modo Oscuro</label>
-                    <input type="checkbox" id="theme-toggle" class="toggle-switch">
-                </div>
-                <div class="setting-item">
-                    <label for="lang-select">Idioma / Language</label>
-                    <select id="lang-select" class="dropdown-select">
-                        <option value="es">Español</option>
-                        <option value="en">English</option>
-                        <option value="it">Italiano</option>
-                        <option value="pt">Português</option>
-                    </select>
-                </div>
-            </div>
-
-            <hr class="settings-divider">
-
-            <div id="pro-upgrade-container" class="setting-group">
-                <button id="btn-become-pro" class="btn-primary-action">Hacerse PRO</button>
-            </div>
-
-            <div id="pro-settings-container" class="setting-group hidden">
-                <h3 class="pro-title">Ajustes PRO</h3>
-                <button id="btn-change-currency" class="btn-secondary">Cambiar Moneda</button>
-                <button id="btn-change-email" class="btn-secondary">Cambiar Email</button>
-                <button id="btn-restore-settings" class="btn-secondary">Restaurar Ajustes</button>
-                <button id="btn-undo-pro" class="btn-danger">Deshacer PRO</button>
-            </div>
-
-            <hr class="settings-divider">
-
-            <div id="auth-container" class="setting-group">
-                <h3>Inicio Sesión PRO</h3>
-                <input type="email" id="auth-email" class="input-field" placeholder="Correo electrónico">
-                <input type="password" id="auth-password" class="input-field" placeholder="Contraseña">
-                <button id="btn-login" class="btn-primary-action">Iniciar Sesión</button>
-                <button id="btn-register" class="btn-secondary">Registrarse</button>
-            </div>
-
-            <hr class="settings-divider">
-
-            <div id="legal-container" class="setting-group legal-links">
-                <a href="#privacy" id="link-privacy">Política de Privacidad</a>
-                <a href="#terms" id="link-terms">Términos de Servicio</a>
-            </div>
-        </div>
-    </aside>
-
-    <main id="app-main-content">
-                <section id="country-selection" class="selection-section">
-            <h2 id="label-country" class="section-title">País / Country</h2>
-            <div class="button-group country-buttons">
-                <button id="btn-spain" class="btn-country active">España</button>
-                <button id="btn-uk" class="btn-country">UK</button>
-                <button id="btn-italy" class="btn-country disabled" disabled>
-                    Italia <span class="badge-soon">Próximamente</span>
-                </button>
-                <button id="btn-portugal" class="btn-country disabled" disabled>
-                    Portugal <span class="badge-soon">Próximamente</span>
+    <div id="app-container">
+        <header>
+            <div class="header-content">
+                <h1>PAYROLL <span class="gold-text">PRO</span></h1>
+                <button id="btn-settings" class="icon-btn">
+                    <span class="material-icons">settings</span>
                 </button>
             </div>
-            
-            <h2 id="label-mode" class="section-title">Modo / Mode</h2>
-            <div class="button-group mode-buttons">
-                <button id="btn-mode-annual" class="btn-mode active">Anual</button>
-                <button id="btn-mode-monthly" class="btn-mode">Mensual</button>
-                <button id="btn-mode-hourly" class="btn-mode">Por Horas</button>
-                <button id="btn-mode-dismissal" class="btn-mode pro-feature hidden">Despido <span class="pro-badge">PRO</span></button>
-                <button id="btn-mode-inverse" class="btn-mode pro-feature hidden">Inverso <span class="pro-badge">PRO</span></button>
-            </div>
-        </section>
+        </header>
 
-        <section id="module-spain" class="country-module active">
+        <main id="main-screen" class="screen">
             
-            <div id="spain-annual" class="calc-form active">
+            <div id="form-spain" class="country-form">
                 <div class="input-group">
-                    <label for="sp-annual-gross">Importe Bruto Anual (€)</label>
-                    <input type="number" id="sp-annual-gross" class="input-field" placeholder="Ej: 24000">
+                    <label>Salario Bruto Anual (€)</label>
+                    <input type="number" id="sp-annual-gross" placeholder="Ej: 30000" inputmode="decimal">
                 </div>
                 <div class="input-group">
-                    <label for="sp-annual-months">Pagas</label>
-                    <select id="sp-annual-months" class="dropdown-select">
-                        <option value="12">12 Pagas</option>
-                        <option value="14">14 Pagas</option>
+                    <label>Retención IRPF % (Opcional)</label>
+                    <input type="number" id="sp-irpf-manual" placeholder="Auto" inputmode="decimal">
+                </div>
+            </div>
+
+            <div id="form-uk" class="country-form hidden">
+                <div class="input-group">
+                    <label>Annual Gross Salary (£)</label>
+                    <input type="number" id="uk-annual-gross" placeholder="Ej: 45000" inputmode="decimal">
+                </div>
+
+                <div class="input-group">
+                    <label>Tax Region</label>
+                    <select id="uk-region-select" class="custom-select">
+                        <option value="rUK">England / Wales / NI</option>
+                        <option value="SCO">Scotland (6 Tax Bands)</option>
+                    </select>
+                </div>
+
+                <div class="toggle-container">
+                    <label class="switch-label">Include Holiday Pay (12.07%)</label>
+                    <label class="switch">
+                        <input type="checkbox" id="uk-holiday-pay">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            </div>
+            <div id="results-container" class="results-card">
+                <div class="net-label">SALARIO NETO ESTIMADO</div>
+                <div id="net-result-value" class="net-value">0.00€</div>
+                <div id="results-list" class="breakdown-list">
+                    </div>
+            </div>
+            <div id="ad-banner-container" class="ad-container">
+                <div class="ad-placeholder">Anuncio</div>
+            </div>
+        </main>
+
+        <section id="settings-screen" class="screen hidden">
+            <div class="settings-header">
+                <button class="btn-back icon-btn">
+                    <span class="material-icons">arrow_back</span>
+                </button>
+                <h2>Configuración PRO</h2>
+            </div>
+            
+            <div class="settings-content">
+                <div class="pro-card">
+                    <span class="material-icons gold-text">workspace_premium</span>
+                    <h3>Acceso Ilimitado</h3>
+                    <p>Desbloquea historial de cálculos y exportación en PDF.</p>
+                    <button class="gold-btn">DESBLOQUEAR PRO</button>
+                </div>
+
+                <div class="setting-item">
+                    <span>Moneda Principal</span>
+                    <select id="currency-pref">
+                        <option value="EUR">Euro (€)</option>
+                        <option value="GBP">Pound (£)</option>
                     </select>
                 </div>
             </div>
-
-            <div id="spain-monthly" class="calc-form hidden">
-                <div class="input-group">
-                    <label for="sp-monthly-gross">Importe Bruto Mensual (€)</label>
-                    <input type="number" id="sp-monthly-gross" class="input-field" placeholder="Ej: 2000">
-                </div>
-                <div class="input-group toggle-group">
-                    <label for="sp-monthly-prorated">Paga Extra Prorrateada</label>
-                    <input type="checkbox" id="sp-monthly-prorated" class="toggle-switch">
-                </div>
-            </div>
-
-            <div id="spain-hourly" class="calc-form hidden">
-                <div class="input-group">
-                    <label for="sp-hourly-price">Precio por Hora (€)</label>
-                    <input type="number" id="sp-hourly-price" class="input-field" placeholder="Ej: 10.50">
-                </div>
-                <div class="input-group">
-                    <label for="sp-hourly-hours">Número de Horas</label>
-                    <input type="number" id="sp-hourly-hours" class="input-field" placeholder="Ej: 8">
-                </div>
-                <div class="input-group">
-                    <label for="sp-hourly-days">Número de Días</label>
-                    <input type="number" id="sp-hourly-days" class="input-field" placeholder="Ej: 20">
-                </div>
-            </div>
-
-            <div id="spain-dismissal" class="calc-form pro-feature hidden">
-                <div class="input-group">
-                    <label for="sp-dismissal-years">Años Trabajados</label>
-                    <input type="number" id="sp-dismissal-years" class="input-field" placeholder="Ej: 5">
-                </div>
-                <div class="input-group">
-                    <label for="sp-dismissal-type">Tipo de Despido</label>
-                    <select id="sp-dismissal-type" class="dropdown-select">
-                        <option value="objective">Objetivo (20 días/año)</option>
-                        <option value="unfair">Improcedente (33 días/año)</option>
-                    </select>
-                </div>
-            </div>
-            <details id="spain-advanced" class="advanced-settings">
-                <summary>Configuración Avanzada</summary>
-                <div class="advanced-content">
-                    <div class="input-group">
-                        <label for="sp-irpf-manual">Ajustar IRPF Manual (%)</label>
-                        <input type="number" id="sp-irpf-manual" class="input-field" placeholder="Ej: 15">
-                    </div>
-                    <div class="pro-fields-wrapper">
-                        <div class="input-group pro-item">
-                            <label for="sp-pro-ss">Añadir Seg. Social Extra (€)</label>
-                            <input type="number" id="sp-pro-ss" class="input-field pro-input" placeholder="0.00">
-                        </div>
-                        <div class="input-group pro-item">
-                            <label for="sp-pro-extras">Extras / Bonus (€)</label>
-                            <div class="multi-input">
-                                <input type="number" id="sp-pro-extras-val" class="input-field pro-input" placeholder="Cantidad">
-                                <input type="number" id="sp-pro-extras-mul" class="input-field pro-input" placeholder="x1">
-                            </div>
-                        </div>
-                        <div class="input-group pro-item">
-                            <label for="sp-pro-km">Kilometraje (€)</label>
-                            <div class="multi-input">
-                                <input type="number" id="sp-pro-km-val" class="input-field pro-input" placeholder="Precio/km">
-                                <input type="number" id="sp-pro-km-total" class="input-field pro-input" placeholder="Total km">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </details>
         </section>
 
-        <section id="module-uk" class="country-module hidden">
-            
-            <div id="uk-annual" class="calc-form active">
-                <div class="input-group">
-                    <label for="uk-annual-gross">Gross Annual Salary (£)</label>
-                    <input type="number" id="uk-annual-gross" class="input-field" placeholder="Ej: 30000">
-                </div>
-            </div>
+        <nav id="bottom-nav">
+            <button class="nav-btn active" data-country="spain">
+                <img src="https://flagcdn.com/w40/es.png" alt="España">
+                <span>España</span>
+            </button>
+            <button class="nav-btn" data-country="uk">
+                <img src="https://flagcdn.com/w40/gb.png" alt="UK">
+                <span>UK</span>
+            </button>
+        </nav>
+    </div>
 
-            <div id="uk-monthly" class="calc-form hidden">
-                <div class="input-group">
-                    <label for="uk-monthly-gross">Monthly Gross Pay (£)</label>
-                    <input type="number" id="uk-monthly-gross" class="input-field" placeholder="Ej: 2500">
-                </div>
-                <div class="input-group">
-                    <label for="uk-pay-period">Pay Period (1-12)</label>
-                    <input type="number" id="uk-pay-period" min="1" max="12" class="input-field" placeholder="Month number">
-                </div>
-            </div>
-
-            <div id="uk-hourly" class="calc-form hidden">
-                <div class="input-group">
-                    <label for="uk-hourly-rate">Hourly Rate (£)</label>
-                    <input type="number" id="uk-hourly-rate" class="input-field" placeholder="Ej: 12">
-                </div>
-                <div class="input-group">
-                    <label for="uk-hourly-hours">Hours</label>
-                    <input type="number" id="uk-hourly-hours" class="input-field" placeholder="Hours per week">
-                </div>
-                <div class="input-group">
-                    <label for="uk-hourly-days">Days (Optional)</label>
-                    <input type="number" id="uk-hourly-days" class="input-field" placeholder="Days per week">
-                </div>
-            </div>
-
-            <details id="uk-advanced" class="advanced-settings">
-                <summary>Advanced Settings / Configuración</summary>
-                <div class="advanced-content">
-                    <div class="input-group toggle-group">
-                        <label for="uk-dual-job">Double Employment / Doble Empleo</label>
-                        <input type="checkbox" id="uk-dual-job" class="toggle-switch">
-                    </div>
-                    <div class="pro-fields-wrapper">
-                        <div class="input-group pro-item">
-                            <label for="uk-pro-taxcode">Tax Code</label>
-                            <input type="text" id="uk-pro-taxcode" class="input-field pro-input" placeholder="Ej: 1257L">
-                        </div>
-                        <div class="input-group pro-item">
-                            <label for="uk-pro-pension">Pension Contribution (%)</label>
-                            <input type="number" id="uk-pro-pension" class="input-field pro-input" placeholder="Ej: 5">
-                        </div>
-                    </div>
-                </div>
-            </details>
-        </section>
-
-        <div class="action-container">
-            <button id="btn-calculate" class="btn-calculate-main">CALCULAR</button>
-        </div>
-                <section id="results-section" class="results-container hidden">
-            <div id="results-loader" class="loader hidden"></div>
-            
-            <div id="results-content">
-                <h2 id="label-summary" class="section-title">Resumen / Summary</h2>
-                
-                <div id="results-list" class="results-grid">
-                    </div>
-
-                <div class="net-total-wrapper">
-                    <span id="label-net-total">IMPORTE NETO</span>
-                    <div id="net-result-value" class="net-amount">0.00</div>
-                </div>
-            </div>
-        </section>
-
-        <div id="ad-interstitial-placeholder" class="ads-container"></div>
-
-        <section id="module-coming-soon" class="country-module hidden">
-            <div class="coming-soon-content">
-                <img src="assets/under-construction.png" alt="Obras" class="img-construction">
-                <h2 id="text-coming-soon">Próximamente / Coming Soon</h2>
-                <p>Estamos trabajando para incluir la legislación de este país.</p>
-            </div>
-        </section>
-
-    </main>
-
-    <footer class="main-footer">
-        <p>&copy; 2026 Payroll Pro - Smart Calculations</p>
-    </footer>
-
-    <script src="app.js" defer></script>
-    <script src="ads/ads-engine.js" defer></script>
+    <script src="firebase-config.js"></script>
+    <script src="ads/ads-engine.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
+
+            <button id="btn-calculate" class="main-btn">CALCULAR</button>
